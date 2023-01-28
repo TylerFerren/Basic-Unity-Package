@@ -1,0 +1,30 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="True">
+    <Style src="project://database/Assets/Basic%20Packages/Collections%20and%20Inventories/Editor/CollectionManagerUSS.uss?fileID=7433441132597879392&amp;guid=5c2aea1d0a4564d5691fd910ed364cc6&amp;type=3#CollectionManagerUSS" />
+    <uie:Toolbar name="MainToolbar" style="justify-content: space-between; height: 32px; margin-top: 8px; padding-left: 6px; padding-right: 3px; padding-top: 3px; padding-bottom: 5px; border-bottom-width: 1px;">
+        <ui:VisualElement style="flex-direction: row;">
+            <uie:ToolbarButton text="Collections" display-tooltip-when-elided="true" name="CollectionsMenuButton" class="menuButton" />
+            <uie:ToolbarButton text="Attributes" display-tooltip-when-elided="true" name="AttributeMenuButton" class="menuButton" />
+            <uie:ToolbarButton text="Settings" display-tooltip-when-elided="true" name="SettingsMenuButton" class="menuButton" />
+        </ui:VisualElement>
+        <uie:ToolbarSearchField focusable="true" style="width: auto; flex-shrink: 1; flex-grow: 2;" />
+    </uie:Toolbar>
+    <ui:VisualElement name="Collections" style="flex-grow: 1; flex-direction: row; visibility: visible; display: flex;">
+        <ui:VisualElement style="flex-grow: 1;">
+            <ui:ListView name="CollectionList" reorderable="false" reorder-mode="Animated" header-title="Collections" show-foldout-header="true" horizontal-scrolling="false" show-border="true" show-add-remove-footer="false" show-bound-collection-size="false" fixed-item-height="20" style="flex-grow: 1; margin-left: 3px; margin-right: 3px; margin-top: 3px; margin-bottom: 3px;" />
+            <ui:ListView name="ObjectsTypes" reorderable="false" reorder-mode="Animated" header-title="Object Types" show-foldout-header="true" horizontal-scrolling="false" show-border="true" show-add-remove-footer="false" show-bound-collection-size="false" fixed-item-height="20" style="flex-grow: 1; margin-left: 3px; margin-right: 3px; margin-top: 3px; margin-bottom: 3px;" />
+        </ui:VisualElement>
+        <ui:VisualElement style="flex-grow: 1; padding-bottom: 0;">
+            <ui:ListView focusable="true" name="CollectionsObjects" virtualization-method="DynamicHeight" show-add-remove-footer="false" show-foldout-header="true" header-title="Objects" show-border="true" show-bound-collection-size="false" reorderable="true" reorder-mode="Animated" fixed-item-height="20" style="flex-grow: 1; margin-left: 3px; margin-right: 3px; margin-top: 3px; margin-bottom: 3px;" />
+            <ui:VisualElement style="flex-direction: row; justify-content: flex-end; display: none; margin-bottom: 3px;">
+                <ui:Button text="Add" display-tooltip-when-elided="true" name="AddObject" />
+                <ui:Button text="Remove" display-tooltip-when-elided="true" name="RemoveObject" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+        <ui:VisualElement style="flex-grow: 1;">
+            <ui:Label text="Collection Object" display-tooltip-when-elided="true" name="CollectionObjectName" style="margin-bottom: 1px; margin-left: 0; margin-top: 4px; padding-left: 5px;" />
+            <ui:IMGUIContainer style="flex-grow: 1; margin-left: 3px; margin-right: 3px; margin-top: 3px; margin-bottom: 3px; border-left-width: 1px; border-right-width: 1px; border-top-width: 1px; border-bottom-width: 1px; border-left-color: rgb(32, 32, 32); border-right-color: rgb(32, 32, 32); border-top-color: rgb(32, 32, 32); border-bottom-color: rgb(32, 32, 32); border-top-left-radius: 5px; border-bottom-left-radius: 5px; border-top-right-radius: 5px; border-bottom-right-radius: 5px; padding-left: 3px; padding-right: 3px; padding-top: 3px; padding-bottom: 3px;">
+                <ui:IMGUIContainer name="SelectedObject" style="flex-grow: 1;" />
+            </ui:IMGUIContainer>
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

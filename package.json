@@ -1,0 +1,28 @@
+{
+  "name": "com.codesign.basic-unity-package",
+  "displayName": "Codesign - Basic Unity Package",
+  "version": "1.0.0",
+  "description": "Basic Tools for starting a game",
+  "dependencies": {
+    "com.unity.inputsystem": ""
+  },
+  "keywords": [
+    "unity",
+    "unity3d",
+    "upm",
+    "utility"
+  ],
+  "homepage": "",
+  "bugs": {
+    "url": ""
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/3d-group/unity-package-template.git"
+  },
+  "license": "MIT",
+  "author": "",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  }
+}

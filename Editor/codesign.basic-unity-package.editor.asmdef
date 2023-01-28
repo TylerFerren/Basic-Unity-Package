@@ -1,0 +1,16 @@
+{
+    "name": "codesign.basic-unity-package.editor",
+    "rootNamespace": "",
+    "references": [
+        "GUID:4f6b557b4d57f49f5a41040794e3e391"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
