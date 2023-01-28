@@ -11,7 +11,7 @@ public class MovementManager : MonoBehaviour
     [Header("Refrences")]
     [SerializeField] private bool physicisBased;
     [SerializeField, HideIf("physicisBased")] public CharacterController controller = null;
-    [SerializeField, ShowIf("physicisBased")] private Rigidbody rigidBody;
+    [SerializeField, ShowIf("physicisBased")] private Rigidbody rigidBody = null;
 
     [SerializeField] public Camera cam = null;
     [SerializeField] public Animator anim;
