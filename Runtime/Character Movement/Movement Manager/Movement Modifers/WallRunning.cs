@@ -98,9 +98,9 @@ public class WallRunning : MonoBehaviour, IMovementModifier
     }
 
     private bool StickingToWall() {
-        var hits = Physics.OverlapSphere(movementManager.controller.transform.position + (Vector3.up * wallStickDistance), wallStickDistance).ToList();
+        var hits = Physics.OverlapSphere(movementManager.controller.transform.position + (Vector3.up * wallStickDistance), wallStickDistance, 0, QueryTriggerInteraction.Ignore).ToList();
         hits.RemoveAll(c => c.transform.root == movementManager.transform.root);
-
+       
         if (hits.Count <= 0) {
             wallCollider = null;
             return false;

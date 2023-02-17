@@ -18,9 +18,11 @@ public class Health : Status, IDamageable
         OnBirth.Invoke();
     }
 
-    public void OnValidate()
+    public void Reset()
     {
-        InspectorBarColor = new Color(0.5f, 0.9f, 0.6f, 1);
+        StatusName = "New Health";
+        inspectorBarColor = new Color(0.5f, 0.9f, 0.6f, 1);
+        currentValue = MaxValue / 2;
     }
 
     public void Damage(float damage)

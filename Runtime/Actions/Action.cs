@@ -3,12 +3,11 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using Sirenix.OdinInspector;
-using Codesign;
 
 public abstract class Action : MonoBehaviour
 {
     public bool IsActive { get; set; } = false;
-    public ActionPerformer Actor { get; set; }
+    public ActionManager Actor { get; set; }
     [Title("Action Settings")]
     [SerializeField] protected InputActionReference inputRef;
 
@@ -41,7 +40,6 @@ public abstract class Action : MonoBehaviour
     }
 
     public virtual void Trigger(InputAction.CallbackContext context) {
-        
         IsActive = true;
     }
 

@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public class ActionPerformer : MonoBehaviour
+public class ActionManager : MonoBehaviour
 {
     public List<ActionInstance> actions = new List<ActionInstance>();
 
@@ -34,7 +34,6 @@ public struct ActionInstance {
         inputRef.action.Enable();
         inputRef.action.performed += action.Trigger;
         inputRef.action.canceled += action.Release;
-        Debug.Log("Action Instance Enabled");
     }
 
     public void DisableInstance() {
@@ -42,7 +41,6 @@ public struct ActionInstance {
         inputRef.action.Disable();
         inputRef.action.performed -= action.Trigger;
         inputRef.action.canceled -= action.Release;
-        Debug.Log("Action Instance Disabled");
     }
 
 }

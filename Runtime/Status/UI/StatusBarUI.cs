@@ -1,7 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics.Tracing;
-using UnityEditor.Events;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -10,6 +9,7 @@ public class StatusBarUI : MonoBehaviour
 {
     private Status status;
     [SerializeField] private Slider StatusBar;
+    [SerializeField] private bool useStatusColor;
     [SerializeField] private bool billboard = false;
 
 
@@ -26,9 +26,17 @@ public class StatusBarUI : MonoBehaviour
                 SetupStatusBar();
         }
 
-        status = GetComponentInParent<Status>();
-        UnityEventTools.RemovePersistentListener<Status>(status.StatusUpdate, StatusBarUIUpdate);
-        UnityEventTools.AddPersistentListener(status.StatusUpdate, StatusBarUIUpdate);
+        if(status == null) status = GetComponentInParent<Status>();
+    }
+
+    private void OnEnable()
+    {
+        if (status != null) status.StatusUpdate.AddListener(StatusBarUIUpdate);
+    }
+
+    private void OnDisable()
+    {
+        if (status != null) status.StatusUpdate.RemoveListener(StatusBarUIUpdate);
     }
 
     public void SetupStatusBar() {
@@ -56,6 +64,7 @@ public class StatusBarUI : MonoBehaviour
     public void StatusBarUIUpdate(Status status) {
         StatusBar.maxValue = status.MaxValue;
         StatusBar.value = status.CurrentValue;
+
     }
 
     public void BillboardUI() {

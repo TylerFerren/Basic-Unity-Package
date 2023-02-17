@@ -9,13 +9,15 @@ public abstract class Attack : Action
 {
     [Title("Attack Settings")]
     [SerializeField] protected float damage;
-    [SerializeField] protected float CriticalDamage;
+    [SerializeField] protected float criticalDamage;
 
     [SerializeField] protected LayerMask attackableLayers;
 
     [SerializeField, FoldoutGroup("Events")] protected UnityEvent<Collider> OnHit;
     [SerializeField, FoldoutGroup("Events")] protected UnityEvent<Collider> OnCriticalHit;
     [SerializeField, FoldoutGroup("Events")] protected UnityEvent<Collider> OnKill;
+
+    [SerializeField, ReadOnly] private List<HitInfo> hits = new List<HitInfo>();
 
     public override void Trigger(InputAction.CallbackContext context)
     {
@@ -30,7 +32,7 @@ public abstract class Attack : Action
     public virtual void Hit(Collider collider, Health health) {
         if (health.CriticalCollider.Contains(collider))
         {
-            health.Damage(CriticalDamage);
+            health.Damage(criticalDamage);
             OnCriticalHit?.Invoke(collider);
         }
         else {
@@ -38,7 +40,18 @@ public abstract class Attack : Action
             OnHit?.Invoke(collider);
         }
 
-        if (health.CurrentValue <= 0) OnKill?.Invoke(collider);
+        bool kill = false;
+        if (health.CurrentValue <= 0) {
+            OnKill?.Invoke(collider);
+            kill = true;
+        }
+
+        hits.Add(new HitInfo(this, collider, kill));
+    }
+
+    public void UpdateAttack(float _damage, float _criticalDamage) {
+        damage = _damage;
+        criticalDamage = _criticalDamage;
     }
 
 }

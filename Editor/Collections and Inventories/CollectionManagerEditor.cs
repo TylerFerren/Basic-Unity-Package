@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Codesign.Collections;
-using Sirenix.OdinInspector.Editor;
+using Sirenix;
 using UnityEditor;
 using UnityEditor.UIElements;
 using UnityEngine;
@@ -64,29 +64,30 @@ public class CollectionManagerEditor : EditorWindow
     public void CollectionsDrawer() {
         collectionsView.style.display = DisplayStyle.Flex;
         //gets a list of collections from the Assets Database
-        FindTypeOf(out Collection[] collections);
 
-        ListView collectionList = rootVisualElement.Query<ListView>("CollectionList").First();
+        //FindTypeOf(out Collection[] collections);
 
-        collectionList.itemsSource = collections;
-        collectionList.makeItem = () => new Label();
-        collectionList.bindItem = (element, i) => (element as Label).text = collections[i].name.AddCamelCasingSpace();
-        collectionList.Rebuild();
+        //ListView collectionList = rootVisualElement.Query<ListView>("CollectionList").First();
 
-        collectionList.onSelectionChange += CollectionObjectSelectionDrawer;
+        //collectionList.itemsSource = collections;
+        //collectionList.makeItem = () => new Label();
+        //collectionList.bindItem = (element, i) => (element as Label).text = collections[i].name.AddCamelCasingSpace();
+        //collectionList.Rebuild();
+
+        //collectionList.onSelectionChange += CollectionObjectSelectionDrawer;
 
 
-        ListView objectsTypes = rootVisualElement.Query<ListView>("ObjectsTypes").First();
+        //ListView objectsTypes = rootVisualElement.Query<ListView>("ObjectsTypes").First();
 
-        var nestedClasses = typeof(CollectionObject).GetChildrenTypes().ToList();
-        nestedClasses.Add(typeof(CollectionObject));
+        //var nestedClasses = typeof(CollectionObject).GetChildrenTypes().ToList();
+        //nestedClasses.Add(typeof(CollectionObject));
 
-        objectsTypes.itemsSource = nestedClasses;
-        objectsTypes.makeItem = () => new Label();
-        objectsTypes.bindItem = (element, i) => (element as Label).text = nestedClasses[i].Name.AddCamelCasingSpace() + "s";
-        objectsTypes.Rebuild();
+        //objectsTypes.itemsSource = nestedClasses;
+        //objectsTypes.makeItem = () => new Label();
+        //objectsTypes.bindItem = (element, i) => (element as Label).text = nestedClasses[i].Name.AddCamelCasingSpace() + "s";
+        //objectsTypes.Rebuild();
 
-        objectsTypes.onSelectionChange += TypeObjectSelectionDrawer;
+        //objectsTypes.onSelectionChange += TypeObjectSelectionDrawer;
     }
 
     public void AttributeDrawer() {

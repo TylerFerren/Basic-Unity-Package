@@ -62,18 +62,16 @@ public class RangedAttack : Attack
     {
         fireTimer = 0;
 
-        if (ammo.Enabled && ammo.currentAmmo <= 0)
-            yield return null;
-
-        if (charge.Enabled && charge.charageOnce)
-            yield return StartCoroutine(charge.Charge());
 
         if (overheat.heatCooldown != null)
             StopCoroutine(overheat.heatCooldown);
 
         while (IsActive)
         {
-            if (charge.Enabled && !charge.charageOnce)
+            if (ammo.Enabled && ammo.currentAmmo <= 0)
+                yield return null;
+
+            if (charge.Enabled && charge.charageOnce)
                 yield return StartCoroutine(charge.Charge());
 
             ShotCalculation();

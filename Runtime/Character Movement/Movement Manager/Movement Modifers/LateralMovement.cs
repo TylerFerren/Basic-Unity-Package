@@ -36,6 +36,7 @@ public class LateralMovement : MonoBehaviour, IMovementModifier
     [SerializeField, FoldoutGroup("Sprint"), ShowIf("sprintUsesStatus")] private float sprintStatusCost = 3;
 
     [SerializeField, FoldoutGroup("Rotation")] private bool targetLock = false;
+    [SerializeField, FoldoutGroup("Rotation")] private bool OnlyRotateOnMove = false;
     [SerializeField, Range(0.0f, 720f), FoldoutGroup("Rotation")] private float rotationSpeed = 180f;
     [SerializeField, Range(0.0f, 720f), FoldoutGroup("Rotation")] private float airRotationSpeed = 150f;
 
@@ -147,8 +148,11 @@ public class LateralMovement : MonoBehaviour, IMovementModifier
 
     private void RotationCalc()
     {
-        //chects if there is any directional input currently happening
-        if (movementManager.InputDirection != Vector2.zero)
+        //chects if this only rotates on move and if there is any directional input currently happening 
+        if (OnlyRotateOnMove && movementManager.InputDirection == Vector2.zero) {
+            inputAngleChange = Mathf.Abs(inputAngleChange) > 0.05 ? Mathf.LerpAngle(inputAngleChange, 0, Time.fixedDeltaTime) : 0;
+        }
+        else
         {
             //sets rotation speed based on if the character is grounded
             float rotSpeed = movementManager.IsGrounded ? rotationSpeed : airRotationSpeed;
@@ -166,7 +170,6 @@ public class LateralMovement : MonoBehaviour, IMovementModifier
             //angle between current heading and input heading
             inputAngleChange = Vector3.SignedAngle(movementManager.controller.transform.forward, movementManager.InputDirection, Vector3.up) / 90;
         }
-        else inputAngleChange = Mathf.Abs(inputAngleChange) > 0.05 ? Mathf.LerpAngle(inputAngleChange, 0, Time.fixedDeltaTime) : 0;
     }
 
     public void OnSprint(InputAction.CallbackContext context)
