@@ -10,9 +10,8 @@ public abstract class Action : MonoBehaviour
     public ActionManager Actor { get; set; }
     [Title("Action Settings")]
     [SerializeField] protected InputActionReference inputRef;
-
-    [SerializeField, ToggleGroup("useCooldown")] protected bool useCooldown;
-    [SerializeField, ToggleGroup("useCooldown")] protected float cooldownTime;
+    [SerializeField] protected bool useCooldown;
+    [SerializeField] protected LevelingValue<float> cooldownTime = new LevelingValue<float>(3, 3, 0.66f, 1);
     public float CurrentTimer { get; set; }
     protected Coroutine ActiveCooldown;
 

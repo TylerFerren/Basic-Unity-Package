@@ -8,8 +8,8 @@ using UnityEngine.Events;
 public abstract class Attack : Action
 {
     [Title("Attack Settings")]
-    [SerializeField] protected float damage;
-    [SerializeField] protected float criticalDamage;
+    [SerializeField] protected LevelingValue<float> damage = 10;
+    [SerializeField] protected LevelingValue<float> criticalDamage;
 
     [SerializeField] protected LayerMask attackableLayers;
 

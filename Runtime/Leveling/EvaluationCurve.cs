@@ -6,9 +6,9 @@ using UnityEngine;
 public class EvaluationCurve 
 {
     
-    public float Floor;
-    public float LinearGain;
-    public float ExponetialGain;
+    public float Floor = 1;
+    public float LinearGain = 1;
+    public float ExponetialGain = 1;
     [SerializeField, Range(1, 100)] private int TestInput = 1;
     [SerializeField, ReadOnly] private int testOutput;
 

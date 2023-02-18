@@ -10,7 +10,6 @@ public class LevelingValueDrawer : PropertyDrawer
 
     public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
     {
-        
         position.width -= 48;
         show = EditorGUI.Foldout(position, show, "");
         EditorGUI.PropertyField(position, property.FindPropertyRelative("Value"), label);

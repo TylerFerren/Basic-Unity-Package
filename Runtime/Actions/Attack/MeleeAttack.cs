@@ -8,8 +8,8 @@ using UnityEngine.InputSystem;
 public class MeleeAttack : Attack
 {
     [SerializeField] private Collider hitBox;
-    [SerializeField, FoldoutGroup("Attack Timing")] private float attackDelay;
-    [SerializeField, FoldoutGroup("Attack Timing")] private float attackDuration;
+    [SerializeField, FoldoutGroup("Attack Timing")] private LevelingValue<float> attackDelay;
+    [SerializeField, FoldoutGroup("Attack Timing")] private LevelingValue<float> attackDuration;
 
     private float attackTimer;
 

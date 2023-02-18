@@ -5,7 +5,7 @@ using UnityEngine.Events;
 using Sirenix.OdinInspector;
 
 [RequireComponent(typeof(MovementManager))]
-public class LateralMovement : MonoBehaviour, IMovementModifier
+public class LateralMovement : MonoBehaviour, IMovementModifier, IValueLeveling
 {
     #region IMovementModifer
     public Vector3 MovementVector { get; private set; }
@@ -25,23 +25,23 @@ public class LateralMovement : MonoBehaviour, IMovementModifier
     
 
     #region fields
-    [SerializeField, Tooltip("Base Speed of standard movement"), FoldoutGroup("Basic")] private float standardSpeed = 5f;
-    [SerializeField, FoldoutGroup("Basic")] private float acceleration = 5;
-    [SerializeField, FoldoutGroup("Basic")] private float directionalAcceleration = 3;
-    [SerializeField, FoldoutGroup("Basic")] private AnimationCurve offAngleSpeedReduction = AnimationCurve.Constant(0, 180, 1);
-
-    [SerializeField, FoldoutGroup("Sprint"), Tooltip("Top Speed of standard movement")] private float sprintSpeed = 9f;
-    [SerializeField, FoldoutGroup("Sprint")] private bool sprintUsesStatus = false;
-    [SerializeField, FoldoutGroup("Sprint"), ShowIf("sprintUsesStatus")] private Status status;
-    [SerializeField, FoldoutGroup("Sprint"), ShowIf("sprintUsesStatus")] private float sprintStatusCost = 3;
-
-    [SerializeField, FoldoutGroup("Rotation")] private bool targetLock = false;
-    [SerializeField, FoldoutGroup("Rotation")] private bool OnlyRotateOnMove = false;
-    [SerializeField, Range(0.0f, 720f), FoldoutGroup("Rotation")] private float rotationSpeed = 180f;
-    [SerializeField, Range(0.0f, 720f), FoldoutGroup("Rotation")] private float airRotationSpeed = 150f;
-
-    [SerializeField, Tooltip("movement speed when not grounded"), FoldoutGroup("Air Movement")] private float airMoveSpeed = 3f;
-    [SerializeField, Tooltip("adjusts amount of momentum lost when airborn"), FoldoutGroup("Air Movement")] private float airResitance = 1f;
+    [SerializeField, Tooltip("Base Speed of standard movement")] private LevelingValue<float> standardSpeed = 5;
+    [SerializeField] private float acceleration = 5;
+    [SerializeField] private float directionalAcceleration = 3;
+    [SerializeField] private AnimationCurve offAngleSpeedReduction = AnimationCurve.Constant(0, 180, 1);
+    [Header("Sprint")]
+    [SerializeField, Tooltip("Top Speed of standard movement")] private LevelingValue<float> sprintSpeed = 9;
+    [SerializeField] private bool sprintUsesStatus = false;
+    [SerializeField, ShowIf("sprintUsesStatus")] private Status status;
+    [SerializeField, ShowIf("sprintUsesStatus")] private LevelingValue<float> sprintStatusCost = 3;
+    [Header("Rotation")]
+    [SerializeField] private bool targetLock = false;
+    [SerializeField] private bool OnlyRotateOnMove = false;
+    [SerializeField, Range(0.0f, 720f),] private float rotationSpeed = 180f;
+    [SerializeField, Range(0.0f, 720f),] private float airRotationSpeed = 150f;
+    [Header("Air")]
+    [SerializeField, Tooltip("movement speed when not grounded")] private LevelingValue<float> airMoveSpeed = 3f;
+    [SerializeField, Tooltip("adjusts amount of momentum lost when airborn")] private float airResitance = 1f;
     #endregion
 
     #region modifiers
@@ -181,6 +181,4 @@ public class LateralMovement : MonoBehaviour, IMovementModifier
     {
         //Gizmos.DrawRay(transform.position, TargetDirection);
     }
-
-
 }

@@ -28,6 +28,7 @@ public class BoosterPack : MonoBehaviour, IMovementModifier
     [SerializeField] private bool MustNotBeGrounded;
 
     private Vector3 boostVector;
+    private Vector3 boostDirection;
     private Vector3 smoothBoost;
 
     private bool boosting;
@@ -40,6 +41,7 @@ public class BoosterPack : MonoBehaviour, IMovementModifier
 
         if (context.started) {
             boostDestination = movementManager.controller.transform.position + movementManager.controller.transform.forward * BoostDistance;
+            DirectionCalc();
         }
     }
 
@@ -58,16 +60,21 @@ public class BoosterPack : MonoBehaviour, IMovementModifier
         MovementVector = boostVector;
     }
 
-    private Vector3 BoostCalc() {
-        Vector3 boostDirection = boostDestination - movementManager.controller.transform.position;
+    private Vector3 DirectionCalc() {
+        return boostDirection = boostDestination - movementManager.controller.transform.position /(1 * Time.deltaTime);
 
-        if (boostDirection.magnitude < 0.5f) return boostVector = Vector3.zero;
+    }
+
+    private Vector3 BoostCalc() {
+        Vector3 boostVector = boostDirection ;
+
+        if (boostVector.magnitude < 0.5f) return this.boostVector = Vector3.zero;
 
         Vector3 boostHeight = Vector3.up * BoostLift;
 
-        smoothBoost = Vector3.Lerp(smoothBoost, boostDirection, Time.fixedDeltaTime);
+        smoothBoost = Vector3.Lerp(smoothBoost, boostVector, Time.fixedDeltaTime);
         
-        return boostVector = boostDirection * Time.fixedDeltaTime / BoostDuration;
+        return this.boostVector = boostVector * Time.fixedDeltaTime / BoostDuration;
     }
 
     private void OnDrawGizmosSelected()

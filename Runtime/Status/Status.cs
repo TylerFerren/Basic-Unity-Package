@@ -28,7 +28,6 @@ public class Status : MonoBehaviour
 
     protected Coroutine ActiveAdjustment;
 
-    [SerializeField, HideInInspector]
     protected bool showGizmos;
 
     public void OnEnable()
@@ -45,7 +44,12 @@ public class Status : MonoBehaviour
 
         if (ActiveAdjustment != null) StopCoroutine(ActiveAdjustment);
         if (automaticRefill) ActiveAdjustment = StartCoroutine(AdjustOverTime(refillRate, refillDelay));
+    }
 
+    public void SetMax(float value) {
+        var currentRatio = currentValue / maxValue.Value;
+        maxValue.Value = value;
+        currentValue = maxValue.Value * currentRatio;
     }
 
     public IEnumerator AdjustOverTime(float AdjustRate)
@@ -68,13 +72,10 @@ public class Status : MonoBehaviour
             yield return null;
         }
     }
-    [Button]
+
     public void UpdateValueUpdaters() {
-        var currentRatio = currentValue/maxValue.Value;
-        maxValue.Value = maxValue.GetPropertyValuefloat();
-        currentValue = maxValue.Value * currentRatio;
-        StatusUpdate.Invoke(this);
-        if (automaticRefill) ActiveAdjustment = StartCoroutine(AdjustOverTime(refillRate, refillDelay));
+        SetMax(maxValue.GetPropertyValuefloat());
+        AdjustStatus(0);
     }
 
     public static List<FieldInfo> GetAttributeValues<T>(object target) where T : Attribute
@@ -115,7 +116,6 @@ public class Status : MonoBehaviour
 
             GUIContent content = new GUIContent(currentValue.ToString() + "/" + maxValue.ToString());
             GUIStyle labelStyle = new GUIStyle() { alignment = TextAnchor.MiddleCenter, richText = true, fixedWidth = 100, fixedHeight = 20, fontSize = 7 };
-
         }
     }
 }

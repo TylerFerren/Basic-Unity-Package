@@ -13,14 +13,14 @@ public class RangedAttack : Attack
     [Title("Ranged Settings")]
     [SerializeField] protected RangedType rangedType;
     [SerializeField, ShowIf("rangedType", RangedType.Projectile)] protected GameObject projectile;
-    [SerializeField] protected float AttackRange = 3;
+    [SerializeField] protected LevelingValue<float> AttackRange = 3;
     [SerializeField] protected Vector3 firePoint;
 
-    [SerializeField, FoldoutGroup("FireRate")] protected float fireRate;
+    [SerializeField, FoldoutGroup("FireRate")] protected LevelingValue<float> fireRate;
     [SerializeField, FoldoutGroup("FireRate")] protected bool continuousFire;
 
     [SerializeField, ToggleGroup("useSpread")] protected bool useSpread;
-    [SerializeField, ToggleGroup("useSpread")] protected float spread;
+    [SerializeField, ToggleGroup("useSpread")] protected LevelingValue<float> spread;
     [SerializeField, ToggleGroup("useSpread")] protected AnimationCurve spreadRate = new AnimationCurve();
 
     [SerializeField] protected OverheatSystem overheat = new OverheatSystem();

@@ -24,8 +24,8 @@ public class Jump : MonoBehaviour, IMovementModifier
 
     private MovementManager movementManager = null;
 
-    [SerializeField] private float jumpHeight = 3f;
-    [SerializeField] private float jumpCount = 1f;
+    [SerializeField] private LevelingValue<float> jumpHeight = new LevelingValue<float>(3f);
+    [SerializeField] private LevelingValue<int> jumpCount = new LevelingValue<int>(1);
     [SerializeField, Range(1f, 10f)] private float shortJumpMultipler = 2;
 
     [SerializeField, Range(0, 1f)] private float contactNormalInfluence;
@@ -36,7 +36,7 @@ public class Jump : MonoBehaviour, IMovementModifier
     public float LastJumpHieght { get; set; } = 0;
 
     private bool isJumping;
-    private float currentJumpCount;
+    private int currentJumpCount;
     private float jumpForce;
     private Vector3 jumpVector;
     private Vector3 gravity = Physics.gravity;
@@ -79,7 +79,7 @@ public class Jump : MonoBehaviour, IMovementModifier
 
     public void OnJump(InputAction.CallbackContext context)
     {
-        if (context.started && currentJumpCount < jumpCount)
+        if (context.started && currentJumpCount < jumpCount.Value)
         {
             if (movementManager.IsGrounded) {
                 jumpingFloor = movementManager.controller.transform.position.y;
@@ -91,7 +91,7 @@ public class Jump : MonoBehaviour, IMovementModifier
             currentShortJumpMultipler = 1;
 
             // the square root of H * -2 * G = how much velocity needed to reach desired height
-            jumpForce = Mathf.Sqrt(jumpHeight * -2f * gravity.y);
+            jumpForce = Mathf.Sqrt(jumpHeight.Value * -2f * gravity.y);
             jumpVector = Vector3.Lerp(Vector3.Lerp(Vector3.up, movementManager.ContactNormal, contactNormalInfluence), movementManager.RelativeInput, inputInfluence).normalized * jumpForce;
         }
         else if (context.canceled)
@@ -113,8 +113,6 @@ public class Jump : MonoBehaviour, IMovementModifier
             {
                 currentShortJumpMultipler = Mathf.Lerp(currentShortJumpMultipler, shortJumpMultipler, Time.fixedDeltaTime * 5);
             }
-            //jumpForce += gravity.y * currentShortJumpMultipler * Time.fixedDeltaTime;
-
             jumpVector += gravity * currentShortJumpMultipler * Time.deltaTime;
         }
         else if (MovementVector == Vector3.zero) {

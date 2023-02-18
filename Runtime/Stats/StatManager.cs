@@ -26,7 +26,6 @@ public class StatManager : MonoBehaviour
         UpgradePoints--;
     }
 
-    [Button]
     public void UpgradeStat(string statName) {
         var stat = Stats.Find(n => n.Category == StatCategories.IndexOf(statName));
         if (UpgradePoints <= 0) return;
