@@ -29,7 +29,7 @@ public class Status : MonoBehaviour
     protected Coroutine ActiveAdjustment;
 
     protected bool showGizmos;
-
+    [SerializeField, ShowIf("showGizmos")] private Vector3 gizmosOffset = new Vector3();
     public void OnEnable()
     {
         if (currentValue == 0) currentValue = maxValue.Value;
@@ -94,28 +94,23 @@ public class Status : MonoBehaviour
         return values;
     }
 
-    [ContextMenu("Set Color")]
-    private void ChangeBarColor(Color newColor) {
-        inspectorBarColor = newColor;
-    }
-
     [ContextMenu("Show as Gizmos")]
     private void SwitchShowGizmos()
     {
         showGizmos = !showGizmos;
     }
-    
+#if UNITY_EDITOR
     public void OnDrawGizmos()
     {
         if (showGizmos)
         {
-            Vector3 position;
-            if (TryGetComponent(out Collider collider))
-                position = collider.bounds.center + (collider.bounds.extents.magnitude * Vector3.up);
-            else position = transform.position + Vector3.up;
+            Vector3 position = transform.position + gizmosOffset;
 
-            GUIContent content = new GUIContent(currentValue.ToString() + "/" + maxValue.ToString());
-            GUIStyle labelStyle = new GUIStyle() { alignment = TextAnchor.MiddleCenter, richText = true, fixedWidth = 100, fixedHeight = 20, fontSize = 7 };
+            GUIContent content = new GUIContent(currentValue.ToString() + "/" + maxValue.Value.ToString() + " HP");
+            GUIStyle labelStyle = new GUIStyle() { alignment = TextAnchor.MiddleCenter, richText = false, fixedWidth = 120, fixedHeight = 30, fontSize = 12, fontStyle = FontStyle.Bold};
+            labelStyle.normal.textColor = inspectorBarColor;
+            Handles.Label(position, content, labelStyle);
         }
     }
+#endif
 }
