@@ -1,9 +1,12 @@
 ﻿using UnityEngine;
 
-public interface IDamageable
+namespace Codesign
 {
-    void Damage(float damage);
-    float MaxValue { get; set; }
-    float CurrentValue { get; set; }
+    public interface IDamageable
+    {
+        void Damage(float damage);
+        float MaxValue { get; set; }
+        float CurrentValue { get; set; }
 
+    }
 }

@@ -2,10 +2,14 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public interface IMovementModifier 
+namespace Codesign
 {
-    Vector3 MovementVector { get; }
-    bool MovementPaused { get;  }
 
-    void PauseMovement(bool paused);
+    public interface IMovementModifier
+    {
+        Vector3 MovementVector { get; }
+        bool MovementPaused { get; }
+
+        void PauseMovement(bool paused);
+    }
 }

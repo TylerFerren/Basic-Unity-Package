@@ -4,11 +4,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
-public static class TypeExtension
+namespace Codesign
 {
-    public static IEnumerable<Type> GetChildrenTypes(this Type type)
+
+    public static class TypeExtension
     {
-        var subclassTypes = Assembly.GetAssembly(type).GetTypes().Where(t => t.IsSubclassOf(type) && t.BaseType == type);
-        return subclassTypes;
+        public static IEnumerable<Type> GetChildrenTypes(this Type type)
+        {
+            var subclassTypes = Assembly.GetAssembly(type).GetTypes().Where(t => t.IsSubclassOf(type) && t.BaseType == type);
+            return subclassTypes;
+        }
     }
 }

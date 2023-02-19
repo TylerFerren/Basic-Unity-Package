@@ -3,11 +3,14 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Text.RegularExpressions;
 
-public static class StringExtension
+namespace Codesign
 {
-    public static string AddCamelCasingSpace(this string _string)
+    public static class StringExtension
     {
-        var correction = Regex.Replace(_string, "(\\B[A-Z])", " $1");
-        return correction;
+        public static string AddCamelCasingSpace(this string _string)
+        {
+            var correction = Regex.Replace(_string, "(\\B[A-Z])", " $1");
+            return correction;
+        }
     }
 }

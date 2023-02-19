@@ -4,52 +4,59 @@ using System.Linq;
 using UnityEditor;
 using UnityEngine;
 
-public class PrefabTester : MonoBehaviour
+
+namespace Codesign
 {
-    
-    public GameObject Prefab;
-
-    List<GameObject> gameObjects = new List<GameObject>();
-
-    // Start is called before the first frame update
-    void Start()
+    public class PrefabTester : MonoBehaviour
     {
-        if (!PrefabUtility.IsPartOfAnyPrefab(Prefab)) return;
-        
-        for (int i = 0; i < 5; i++)
+        public GameObject Prefab;
+
+        List<GameObject> gameObjects = new List<GameObject>();
+
+        // Start is called before the first frame update
+        void Start()
         {
-            var newPrefab = PrefabUtility.InstantiatePrefab(Prefab, transform) as GameObject;
-            print(newPrefab);
-            if (newPrefab != null)
+            if (!PrefabUtility.IsPartOfAnyPrefab(Prefab)) return;
+
+            for (int i = 0; i < 5; i++)
             {
-                newPrefab.SetActive(false);
-                gameObjects.Add(newPrefab);
+                var newPrefab = PrefabUtility.InstantiatePrefab(Prefab, transform) as GameObject;
+                print(newPrefab);
+                if (newPrefab != null)
+                {
+                    newPrefab.SetActive(false);
+                    gameObjects.Add(newPrefab);
+                }
             }
+            StartCoroutine(PoolObjects());
         }
-        StartCoroutine(PoolObjects());
-    }
 
-    public IEnumerator PoolObjects() {
-        var count = 0;
-        yield return new WaitForSeconds(1);
+        public IEnumerator PoolObjects()
+        {
+            var count = 0;
+            yield return new WaitForSeconds(1);
 
-        while (count < gameObjects.Count) {
-            print("birth");
-            GameObject pooledObject = gameObjects.Where(p => p.activeInHierarchy == false).FirstOrDefault();
-            PrefabUtility.RevertPrefabInstance(pooledObject, InteractionMode.UserAction);
-            pooledObject.SetActive(true);
-            float timer = 0;
-            var direction = Random.onUnitSphere;
-            while (timer < 1) {
-                pooledObject.transform.position += direction * Time.deltaTime;
-                timer += Time.deltaTime;
+            while (count < gameObjects.Count)
+            {
+                print("birth");
+                GameObject pooledObject = gameObjects.Where(p => p.activeInHierarchy == false).FirstOrDefault();
+                PrefabUtility.RevertPrefabInstance(pooledObject, InteractionMode.UserAction);
+                pooledObject.SetActive(true);
+                float timer = 0;
+                var direction = Random.onUnitSphere;
+                while (timer < 1)
+                {
+                    pooledObject.transform.position += direction * Time.deltaTime;
+                    timer += Time.deltaTime;
+                    yield return null;
+                }
+                pooledObject.SetActive(false);
+                print("Death");
                 yield return null;
             }
-            pooledObject.SetActive(false);
-            print("Death");
-            yield return null;
-        }
 
-        yield break;
+            yield break;
+        }
     }
+
 }

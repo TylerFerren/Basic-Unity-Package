@@ -9,96 +9,100 @@ using System;
 using System.Reflection;
 using Sirenix.Utilities;
 
-public class Status : MonoBehaviour
+namespace Codesign
 {
-    [SerializeField] protected string StatusName = "New Status";
-    [SerializeField, ProgressBar(0, "MaxValue", r: 1, g: 1, b: 1, Height = 20, ColorGetter = "inspectorBarColor"), HideLabel, HorizontalGroup("colorBar")] protected float currentValue;
-    [SerializeField, HideLabel, HorizontalGroup("colorBar", Width = 80)] protected Color inspectorBarColor = new Color(0.8f, 0.8f, 0.8f, 1);
-    public float CurrentValue { get => currentValue; set => currentValue = value; }
-
-    public LevelingValue<float> maxValue = new LevelingValue<float>(100f, 100, 1.2f, 1.1f);
-    public float MaxValue { get => maxValue.Value; set => maxValue.Value = value; }
-
-    [SerializeField, ToggleGroup("automaticRefill")] private bool automaticRefill;
-    [SerializeField, ToggleGroup("automaticRefill")] private float refillRate = 3;
-    [SerializeField, ToggleGroup("automaticRefill")] private float refillDelay = 3;
-
-    [FoldoutGroup("Event")]
-    public UnityEvent<Status> StatusUpdate = new UnityEvent<Status>();
-
-    protected Coroutine ActiveAdjustment;
-
-    protected bool showGizmos;
-    [SerializeField, ShowIf("showGizmos")] private Vector3 gizmosOffset = new Vector3();
-    public void OnEnable()
+    public class Status : MonoBehaviour
     {
-        if (currentValue == 0) currentValue = maxValue.Value;
-        if (automaticRefill && currentValue < maxValue.Value) ActiveAdjustment = StartCoroutine(AdjustOverTime(refillRate, refillDelay));
-        StatusUpdate.Invoke(this);
-    }
+        [SerializeField] protected string StatusName = "New Status";
+        [SerializeField, ProgressBar(0, "MaxValue", r: 1, g: 1, b: 1, Height = 20, ColorGetter = "inspectorBarColor"), HideLabel, HorizontalGroup("colorBar")] protected float currentValue;
+        [SerializeField, HideLabel, HorizontalGroup("colorBar", Width = 80)] protected Color inspectorBarColor = new Color(0.8f, 0.8f, 0.8f, 1);
+        public float CurrentValue { get => currentValue; set => currentValue = value; }
 
-    public void AdjustStatus(float value)
-    {
-        currentValue = Mathf.Clamp(currentValue + value, 0, maxValue.Value);
-        StatusUpdate.Invoke(this);
+        public LevelingValue<float> maxValue = new LevelingValue<float>(100f, 100, 1.2f, 1.1f);
+        public float MaxValue { get => maxValue.Value; set => maxValue.Value = value; }
 
-        if (ActiveAdjustment != null) StopCoroutine(ActiveAdjustment);
-        if (automaticRefill) ActiveAdjustment = StartCoroutine(AdjustOverTime(refillRate, refillDelay));
-    }
+        [SerializeField, ToggleGroup("automaticRefill")] private bool automaticRefill;
+        [SerializeField, ToggleGroup("automaticRefill")] private float refillRate = 3;
+        [SerializeField, ToggleGroup("automaticRefill")] private float refillDelay = 3;
 
-    public void SetMax(float value) {
-        var currentRatio = currentValue / maxValue.Value;
-        maxValue.Value = value;
-        currentValue = maxValue.Value * currentRatio;
-    }
+        [FoldoutGroup("Event")]
+        public UnityEvent<Status> StatusUpdate = new UnityEvent<Status>();
 
-    public IEnumerator AdjustOverTime(float AdjustRate)
-    {
-        while (currentValue < maxValue.Value)
+        protected Coroutine ActiveAdjustment;
+
+        protected bool showGizmos;
+        [SerializeField, ShowIf("showGizmos")] private Vector3 gizmosOffset = new Vector3();
+        public void OnEnable()
         {
-            currentValue = Mathf.Clamp(currentValue + AdjustRate * Time.deltaTime, 0, maxValue.Value);
-            StatusUpdate?.Invoke(this);
-            yield return null;
+            if (currentValue == 0) currentValue = maxValue.Value;
+            if (automaticRefill && currentValue < maxValue.Value) ActiveAdjustment = StartCoroutine(AdjustOverTime(refillRate, refillDelay));
+            StatusUpdate.Invoke(this);
         }
-    }
 
-    public IEnumerator AdjustOverTime(float AdjustRate, float delay)
-    {
-        yield return new WaitForSeconds(delay);
-        while (currentValue < maxValue.Value)
+        public void AdjustStatus(float value)
         {
-            currentValue = Mathf.Clamp(currentValue + AdjustRate * Time.deltaTime, 0, maxValue.Value);
-            StatusUpdate?.Invoke(this);
-            yield return null;
+            currentValue = Mathf.Clamp(currentValue + value, 0, maxValue.Value);
+            StatusUpdate.Invoke(this);
+
+            if (ActiveAdjustment != null) StopCoroutine(ActiveAdjustment);
+            if (automaticRefill) ActiveAdjustment = StartCoroutine(AdjustOverTime(refillRate, refillDelay));
         }
-    }
 
-    public void UpdateValueUpdaters() {
-        SetMax(maxValue.GetPropertyValuefloat());
-        AdjustStatus(0);
-    }
-
-    public static List<FieldInfo> GetAttributeValues<T>(object target) where T : Attribute
-    {
-        List<FieldInfo> values = new List<FieldInfo>();
-        Type type = target.GetType();
-        var fields = type.BaseType.GetFields( BindingFlags.NonPublic | BindingFlags.Instance);
-        foreach (var field in fields)
+        public void SetMax(float value)
         {
-            T attributes = field.GetAttribute<T>();
-            if (attributes != null)
+            var currentRatio = currentValue / maxValue.Value;
+            maxValue.Value = value;
+            currentValue = maxValue.Value * currentRatio;
+        }
+
+        public IEnumerator AdjustOverTime(float AdjustRate)
+        {
+            while (currentValue < maxValue.Value)
             {
-                values.Add(field);
+                currentValue = Mathf.Clamp(currentValue + AdjustRate * Time.deltaTime, 0, maxValue.Value);
+                StatusUpdate?.Invoke(this);
+                yield return null;
             }
         }
-        return values;
-    }
 
-    [ContextMenu("Show as Gizmos")]
-    private void SwitchShowGizmos()
-    {
-        showGizmos = !showGizmos;
-    }
+        public IEnumerator AdjustOverTime(float AdjustRate, float delay)
+        {
+            yield return new WaitForSeconds(delay);
+            while (currentValue < maxValue.Value)
+            {
+                currentValue = Mathf.Clamp(currentValue + AdjustRate * Time.deltaTime, 0, maxValue.Value);
+                StatusUpdate?.Invoke(this);
+                yield return null;
+            }
+        }
+
+        public void UpdateValueUpdaters()
+        {
+            SetMax(maxValue.GetPropertyValuefloat());
+            AdjustStatus(0);
+        }
+
+        public static List<FieldInfo> GetAttributeValues<T>(object target) where T : Attribute
+        {
+            List<FieldInfo> values = new List<FieldInfo>();
+            Type type = target.GetType();
+            var fields = type.BaseType.GetFields(BindingFlags.NonPublic | BindingFlags.Instance);
+            foreach (var field in fields)
+            {
+                T attributes = field.GetAttribute<T>();
+                if (attributes != null)
+                {
+                    values.Add(field);
+                }
+            }
+            return values;
+        }
+
+        [ContextMenu("Show as Gizmos")]
+        private void SwitchShowGizmos()
+        {
+            showGizmos = !showGizmos;
+        }
 #if UNITY_EDITOR
     public void OnDrawGizmos()
     {
@@ -113,4 +117,5 @@ public class Status : MonoBehaviour
         }
     }
 #endif
+    }
 }

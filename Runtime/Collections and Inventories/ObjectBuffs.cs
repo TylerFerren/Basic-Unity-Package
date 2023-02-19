@@ -2,7 +2,10 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ObjectBuffs : ObjectAttributes
+namespace Codesign.Collections
 {
-    public float BuffValue;
+    public class ObjectBuffs : ObjectAttributes
+    {
+        public float BuffValue;
+    }
 }

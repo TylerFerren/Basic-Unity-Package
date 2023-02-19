@@ -3,48 +3,52 @@ using System.Collections.Generic;
 using UnityEngine;
 using Sirenix.OdinInspector;
 
-[System.Serializable, Toggle("Enabled")]
-public class OverheatSystem
+namespace Codesign
 {
-    public bool Enabled;
-    [field: SerializeField, ProgressBar(0, "HeatLimit", 0.8f, 0.2f, 0.2f)] public float currentHeat { get; set; } = 0;
-    [field: SerializeField] public float HeatLimit { get; set; } = 100;
-    [field: SerializeField] public float heatBuildUp { get; set; } = 3;
-    [field: SerializeField] public float heatDisapation { get; set; } = 5;
-    [field: SerializeField] public float cooledDownLimit { get; set; } = 20;
-    [field: SerializeField] public float HeatCooldownDelay { get; set; } = 1;
-    [field: SerializeField] public bool isOverheated { get; set; }
-    public Coroutine heatCooldown;
-
-    public IEnumerator HeatUp(float heat)
+    [System.Serializable, Toggle("Enabled")]
+    public class OverheatSystem
     {
-        var newHeat = currentHeat + heat;
-        while (currentHeat < newHeat)
+        public bool Enabled;
+        [field: SerializeField, ProgressBar(0, "HeatLimit", 0.8f, 0.2f, 0.2f)] public float currentHeat { get; set; } = 0;
+        [field: SerializeField] public float HeatLimit { get; set; } = 100;
+        [field: SerializeField] public float heatBuildUp { get; set; } = 3;
+        [field: SerializeField] public float heatDisapation { get; set; } = 5;
+        [field: SerializeField] public float cooledDownLimit { get; set; } = 20;
+        [field: SerializeField] public float HeatCooldownDelay { get; set; } = 1;
+        [field: SerializeField] public bool isOverheated { get; set; }
+        public Coroutine heatCooldown;
+
+        public IEnumerator HeatUp(float heat)
         {
-            currentHeat += heatBuildUp * Time.deltaTime;
+            var newHeat = currentHeat + heat;
+            while (currentHeat < newHeat)
+            {
+                currentHeat += heatBuildUp * Time.deltaTime;
+                yield return null;
+            }
+        }
+
+        public IEnumerator HeatCooldown()
+        {
+
+            if (currentHeat > HeatLimit)
+            {
+                currentHeat = HeatLimit;
+                isOverheated = true;
+            }
+
+            while (currentHeat > 0)
+            {
+                if (currentHeat < cooledDownLimit) isOverheated = false;
+                currentHeat -= heatDisapation * Time.deltaTime;
+                yield return null;
+            }
+
+            currentHeat = 0;
+            isOverheated = false;
+
             yield return null;
         }
     }
 
-    public IEnumerator HeatCooldown()
-    {
-
-        if (currentHeat > HeatLimit)
-        {
-            currentHeat = HeatLimit;
-            isOverheated = true;
-        }
-
-        while (currentHeat > 0)
-        {
-            if (currentHeat < cooledDownLimit) isOverheated = false;
-            currentHeat -= heatDisapation * Time.deltaTime;
-            yield return null;
-        }
-
-        currentHeat = 0;
-        isOverheated = false;
-
-        yield return null;
-    }
 }

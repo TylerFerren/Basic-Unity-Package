@@ -8,7 +8,8 @@ using UnityEditor.UIElements;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-public class CollectionManagerEditor : EditorWindow
+namespace Codesign {
+    public class CollectionManagerEditor : EditorWindow
 {
     public VisualTreeAsset visualTree;
 
@@ -152,4 +153,5 @@ public class CollectionManagerEditor : EditorWindow
             types[i] = AssetDatabase.LoadAssetAtPath<T>(path);
         }
     }
+}
 }

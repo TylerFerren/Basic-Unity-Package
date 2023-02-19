@@ -4,76 +4,82 @@ using System.Collections.Generic;
 using Unity.Mathematics;
 using UnityEngine;
 
-[Serializable]
-public class LevelingValue<T>
+namespace Codesign
 {
-    public LevelingValue(T value) {
-        Value = value;
-        if (typeof(T) == typeof(float))
+    [Serializable]
+    public class LevelingValue<T>
+    {
+        public LevelingValue(T value)
         {
-            curve = new EvaluationCurve((float)(object)value, 1, 1);
+            Value = value;
+            if (typeof(T) == typeof(float))
+            {
+                curve = new EvaluationCurve((float)(object)value, 1, 1);
+            }
+            else if (typeof(T) == typeof(int))
+            {
+                curve = new EvaluationCurve((int)(object)value, 1, 1);
+            }
         }
-        else if (typeof(T) == typeof(int))
+
+        public LevelingValue(T value, float floor, float linear, float exponetial)
         {
-            curve = new EvaluationCurve((int)(object)value, 1, 1);
+            Value = value;
+            curve = new EvaluationCurve(floor, linear, exponetial);
         }
-    }
 
-    public LevelingValue(T value, float floor, float linear, float exponetial)
-    {
-        Value = value;
-        curve = new EvaluationCurve(floor, linear, exponetial);
-    }
-
-    public static implicit operator LevelingValue<T>(T value)
-    {
-        return new LevelingValue<T>(value);
-    }
-
-    public static implicit operator T(LevelingValue<T> levelingValue) {
-        return levelingValue.Value;
-    }
-
-    public T Value;
-    public int Level = 0;
-    public EvaluationCurve curve = new EvaluationCurve();
-
-    
-
-    public void LevelUpValue()
-    {
-        Level++;
-        if (typeof(T) == typeof(float))
+        public static implicit operator LevelingValue<T>(T value)
         {
-            Value = (T)(object)curve.Evaluate(Level);
+            return new LevelingValue<T>(value);
         }
-        else if (typeof(T) == typeof(int)) {
-            Value = (T)(object)curve.EvaluateInt(Level);
-        }
-    }
 
-    public static void LevelUpValue(LevelingValue<T> levelingValue)
-    {
-        levelingValue.Level++;
-        if (typeof(T) == typeof(float))
+        public static implicit operator T(LevelingValue<T> levelingValue)
         {
-            levelingValue.Value = (T)(object)levelingValue.curve.Evaluate(levelingValue.Level);
+            return levelingValue.Value;
         }
-        else if (typeof(T) == typeof(int))
+
+        public T Value;
+        public int Level = 0;
+        public EvaluationCurve curve = new EvaluationCurve();
+
+
+
+        public void LevelUpValue()
         {
-            levelingValue.Value = (T)(object)levelingValue.curve.EvaluateInt(levelingValue.Level);
+            Level++;
+            if (typeof(T) == typeof(float))
+            {
+                Value = (T)(object)curve.Evaluate(Level);
+            }
+            else if (typeof(T) == typeof(int))
+            {
+                Value = (T)(object)curve.EvaluateInt(Level);
+            }
         }
-    }
 
-    public int GetPropertyValueInt()
-    {
-        Level++;
-        return curve.EvaluateInt(Level);
-    }
+        public static void LevelUpValue(LevelingValue<T> levelingValue)
+        {
+            levelingValue.Level++;
+            if (typeof(T) == typeof(float))
+            {
+                levelingValue.Value = (T)(object)levelingValue.curve.Evaluate(levelingValue.Level);
+            }
+            else if (typeof(T) == typeof(int))
+            {
+                levelingValue.Value = (T)(object)levelingValue.curve.EvaluateInt(levelingValue.Level);
+            }
+        }
 
-    public float GetPropertyValuefloat()
-    {
-        Level++;
-        return curve.Evaluate(Level);
+        public int GetPropertyValueInt()
+        {
+            Level++;
+            return curve.EvaluateInt(Level);
+        }
+
+        public float GetPropertyValuefloat()
+        {
+            Level++;
+            return curve.Evaluate(Level);
+        }
     }
 }

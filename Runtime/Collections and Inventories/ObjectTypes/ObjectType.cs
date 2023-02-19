@@ -2,7 +2,10 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ObjectType : ScriptableObject
+namespace Codesign.Collections
 {
-    public ObjectType Category;
+    public class ObjectType : ScriptableObject
+    {
+        public ObjectType Category;
+    }
 }

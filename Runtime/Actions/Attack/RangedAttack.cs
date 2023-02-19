@@ -6,7 +6,8 @@ using Sirenix.OdinInspector;
 using UnityEngine.Events;
 using Unity.VisualScripting;
 
-public class RangedAttack : Attack
+namespace Codesign {
+    public class RangedAttack : Attack
 {
     protected enum RangedType {Raycast, Projectile}
 
@@ -135,4 +136,5 @@ public class RangedAttack : Attack
         Gizmos.DrawSphere(transform.TransformPoint(firePoint), 0.1f);
     }
 
+}
 }

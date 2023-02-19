@@ -4,7 +4,8 @@ using System.Collections.Generic;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
-namespace Codesign.Collections {
+namespace Codesign.Collections
+{
     [CreateAssetMenu(fileName = "new Object", menuName ="Objects")]
     public class CollectionObject : ScriptableObject
     {

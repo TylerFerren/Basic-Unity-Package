@@ -1,15 +1,17 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using Codesign;
 
-public class Stanima : Status
+namespace Codesign
 {
-    public void Reset()
+    public class Stanima : Status
     {
-        StatusName = "New Stanima";
-        inspectorBarColor = new Color(0.8f, 0.3f, 0.3f, 1);
-        currentValue = MaxValue/2;
+        public void Reset()
+        {
+            StatusName = "New Stanima";
+            inspectorBarColor = new Color(0.8f, 0.3f, 0.3f, 1);
+            currentValue = MaxValue / 2;
+        }
     }
 }
 

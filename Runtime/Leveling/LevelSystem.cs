@@ -1,60 +1,66 @@
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
 using Sirenix.OdinInspector;
-using Sirenix.Utilities;
 using UnityEngine;
 using UnityEngine.Events;
 
-public class LevelSystem : MonoBehaviour
+namespace Codesign
 {
-    [field: SerializeField] public int CurrentLevel { get; private set; } = 1;
-    [field: SerializeField] public int MaxLevel { get; private set; } = 10;
-
-    [field: SerializeField] public float CurrentExperience { get; private set; }
-    [field: SerializeField] public float ExperienceToNextLevel { get; private set; }
-
-    [SerializeField] private EvaluationCurve experienceCurve;
-
-    [FoldoutGroup("Event")] public UnityEvent OnLevelUpdate;
-
-    private void OnValidate()
+    public class LevelSystem : MonoBehaviour
     {
-        SetExperienceToNextLevel();
-        experienceCurve.TestEvaluate();
-    }
+        [field: SerializeField] public int CurrentLevel { get; private set; } = 1;
+        [field: SerializeField] public int MaxLevel { get; private set; } = 10;
 
-    private void Awake() {
-        SetExperienceToNextLevel();
-    }
+        [field: SerializeField] public float CurrentExperience { get; private set; }
+        [field: SerializeField] public float ExperienceToNextLevel { get; private set; }
 
-    public void EarnExperience(int experience) {
-        CurrentExperience += experience;
-        while (CurrentExperience >= ExperienceToNextLevel) {
-            LevelUp();    
+        [SerializeField] private EvaluationCurve experienceCurve;
+
+        [FoldoutGroup("Event")] public UnityEvent OnLevelUpdate;
+
+        private void OnValidate()
+        {
+            SetExperienceToNextLevel();
+            experienceCurve.TestEvaluate();
         }
-    }
 
-    void LevelUp() {
-        
-        CurrentExperience -= ExperienceToNextLevel;
-        CurrentLevel = Mathf.Clamp(CurrentLevel + 1, 0, MaxLevel);
-        SetExperienceToNextLevel();
-        OnLevelUpdate?.Invoke();
-    }
+        private void Awake()
+        {
+            SetExperienceToNextLevel();
+        }
 
-    void SetExperienceToNextLevel() {
-        ExperienceToNextLevel = experienceCurve.EvaluateInt(CurrentLevel + 1);
-    }
+        public void EarnExperience(int experience)
+        {
+            CurrentExperience += experience;
+            while (CurrentExperience >= ExperienceToNextLevel)
+            {
+                LevelUp();
+            }
+        }
 
-    public void GetExperienceSource(ExperienceSource source) {
-        EarnExperience(source.ExperienceReward);
-    }
+        void LevelUp()
+        {
 
-    public void GetExperienceSource(Collider collider) {
-        if (collider.TryGetComponent(out ExperienceSource source)) {
+            CurrentExperience -= ExperienceToNextLevel;
+            CurrentLevel = Mathf.Clamp(CurrentLevel + 1, 0, MaxLevel);
+            SetExperienceToNextLevel();
+            OnLevelUpdate?.Invoke();
+        }
+
+        void SetExperienceToNextLevel()
+        {
+            ExperienceToNextLevel = experienceCurve.EvaluateInt(CurrentLevel + 1);
+        }
+
+        public void GetExperienceSource(ExperienceSource source)
+        {
             EarnExperience(source.ExperienceReward);
+        }
+
+        public void GetExperienceSource(Collider collider)
+        {
+            if (collider.TryGetComponent(out ExperienceSource source))
+            {
+                EarnExperience(source.ExperienceReward);
+            }
         }
     }
 }
