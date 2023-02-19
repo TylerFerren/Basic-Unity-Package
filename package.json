@@ -5,7 +5,8 @@
   "description": "Basic Tools for starting a game",
   "dependencies": {
     "com.unity.inputsystem": "",
-    "com.unity.cinemachine": ""
+    "com.unity.cinemachine": "",
+    "com.sirenix.odininspector": ""
   },
   "keywords": [
     "unity",
