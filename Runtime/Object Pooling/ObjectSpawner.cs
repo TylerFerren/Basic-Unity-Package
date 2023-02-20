@@ -163,7 +163,6 @@ namespace Codesign
             }
             else if (spawn == null)
             {
-                print("Could not pool");
                 spawn = Instantiate(objectsToSpawn[objectSeed], position, rotation, spawnWithParentTransform ? transform : null);
             }
             if (randomizeScale)
