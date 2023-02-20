@@ -26,7 +26,8 @@ namespace Codesign
 
         private MovementManager movementManager = null;
 
-        [SerializeField] private float wallMovementSpeed = 6;
+        [SerializeField] private LevelingValue<float> wallMovementSpeed = 6;
+        public void UpdateWallMovementSpeed() => wallMovementSpeed.LevelUp();
 
         [SerializeField] private float wallStickDistance;
         [SerializeField] private float wallStickSpeed;

@@ -21,8 +21,12 @@ namespace Codesign
         }
         #endregion
 
-        [SerializeField] private float dodgeSpeed = 4;
-        [SerializeField] private float dodgeDistance = 5;
+        [SerializeField] private LevelingValue<float> dodgeSpeed = 4;
+        public void UpdateDodgeSpeed() => dodgeSpeed.LevelUp();
+
+        [SerializeField] private LevelingValue<float> dodgeDistance = 5;
+        public void UpdateDodgeDistance() => dodgeDistance.LevelUp();
+
         [SerializeField] private float dodgeDelay = 1;
         [SerializeField] private float dodgeCooldown = 1;
         [SerializeField] private bool mustBeGrounded;

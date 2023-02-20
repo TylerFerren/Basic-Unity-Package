@@ -27,7 +27,12 @@ namespace Codesign
         private MovementManager movementManager = null;
 
         [SerializeField] private LevelingValue<float> jumpHeight = new LevelingValue<float>(3f);
+        public void UpdateJumpHeight() => jumpHeight.LevelUp();
+
         [SerializeField] private LevelingValue<int> jumpCount = new LevelingValue<int>(1);
+        public void UpdateJumpCount() => jumpCount.LevelUp();
+
+
         [SerializeField, Range(1f, 10f)] private float shortJumpMultipler = 2;
 
         [SerializeField, Range(0, 1f)] private float contactNormalInfluence;

@@ -19,7 +19,7 @@ namespace Codesign
         public float CurrentValue { get => currentValue; set => currentValue = value; }
 
         public LevelingValue<float> maxValue = new LevelingValue<float>(100f, 100, 1.2f, 1.1f);
-        public float MaxValue { get => maxValue.Value; set => maxValue.Value = value; }
+        public float MaxValue { get => maxValue; set => maxValue = value; }
 
         [SerializeField, ToggleGroup("automaticRefill")] private bool automaticRefill;
         [SerializeField, ToggleGroup("automaticRefill")] private float refillRate = 3;
@@ -30,8 +30,6 @@ namespace Codesign
 
         protected Coroutine ActiveAdjustment;
 
-        protected bool showGizmos;
-        [SerializeField, ShowIf("showGizmos")] private Vector3 gizmosOffset = new Vector3();
         public void OnEnable()
         {
             if (currentValue == 0) currentValue = maxValue.Value;
@@ -48,7 +46,7 @@ namespace Codesign
             if (automaticRefill) ActiveAdjustment = StartCoroutine(AdjustOverTime(refillRate, refillDelay));
         }
 
-        public void SetMax(float value)
+        private void SetMax(float value)
         {
             var currentRatio = currentValue / maxValue.Value;
             maxValue.Value = value;
@@ -76,9 +74,10 @@ namespace Codesign
             }
         }
 
-        public void UpdateValueUpdaters()
+        public void UpdateMaxValue()
         {
-            SetMax(maxValue.GetPropertyValuefloat());
+            maxValue.LevelUp();
+            SetMax(maxValue.Value);
             AdjustStatus(0);
         }
 
@@ -98,12 +97,18 @@ namespace Codesign
             return values;
         }
 
-        [ContextMenu("Show as Gizmos")]
-        private void SwitchShowGizmos()
-        {
-            showGizmos = !showGizmos;
-        }
+
 #if UNITY_EDITOR
+
+    protected bool showGizmos;
+    [SerializeField, ShowIf("showGizmos")] private Vector3 gizmosOffset = new Vector3();
+
+    [ContextMenu("Show as Gizmos")]
+    private void SwitchShowGizmos()
+    {
+        showGizmos = !showGizmos;
+    }
+
     public void OnDrawGizmos()
     {
         if (showGizmos)

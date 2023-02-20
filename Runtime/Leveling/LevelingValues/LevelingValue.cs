@@ -1,8 +1,7 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using Unity.Mathematics;
 using UnityEngine;
+using UnityEngine.Events;
 
 namespace Codesign
 {
@@ -40,11 +39,10 @@ namespace Codesign
 
         public T Value;
         public int Level = 0;
+        [SerializeField]
         public EvaluationCurve curve = new EvaluationCurve();
 
-
-
-        public void LevelUpValue()
+        public void LevelUp()
         {
             Level++;
             if (typeof(T) == typeof(float))
@@ -57,7 +55,7 @@ namespace Codesign
             }
         }
 
-        public static void LevelUpValue(LevelingValue<T> levelingValue)
+        public static void LevelUp(LevelingValue<T> levelingValue)
         {
             levelingValue.Level++;
             if (typeof(T) == typeof(float))
@@ -68,18 +66,6 @@ namespace Codesign
             {
                 levelingValue.Value = (T)(object)levelingValue.curve.EvaluateInt(levelingValue.Level);
             }
-        }
-
-        public int GetPropertyValueInt()
-        {
-            Level++;
-            return curve.EvaluateInt(Level);
-        }
-
-        public float GetPropertyValuefloat()
-        {
-            Level++;
-            return curve.Evaluate(Level);
         }
     }
 }

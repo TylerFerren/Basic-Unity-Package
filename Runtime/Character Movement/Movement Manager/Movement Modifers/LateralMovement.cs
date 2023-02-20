@@ -28,14 +28,17 @@ namespace Codesign
 
         #region fields
         [SerializeField, Tooltip("Base Speed of standard movement")] private LevelingValue<float> standardSpeed = 5;
+        public void UpdateStadardSpeed() => standardSpeed.LevelUp();
         [SerializeField] private float acceleration = 5;
         [SerializeField] private float directionalAcceleration = 3;
         [SerializeField] private AnimationCurve offAngleSpeedReduction = AnimationCurve.Constant(0, 180, 1);
         [Header("Sprint")]
         [SerializeField, Tooltip("Top Speed of standard movement")] private LevelingValue<float> sprintSpeed = 9;
+        public void UpdateSprintSpeed() => sprintSpeed.LevelUp();
         [SerializeField] private bool sprintUsesStatus = false;
         [SerializeField, ShowIf("sprintUsesStatus")] private Status status;
         [SerializeField, ShowIf("sprintUsesStatus")] private LevelingValue<float> sprintStatusCost = 3;
+        public void UpdateSprintStatusCost() => sprintStatusCost.LevelUp();
         [Header("Rotation")]
         [SerializeField] private bool targetLock = false;
         [SerializeField] private bool OnlyRotateOnMove = false;
@@ -43,6 +46,7 @@ namespace Codesign
         [SerializeField, Range(0.0f, 720f),] private float airRotationSpeed = 150f;
         [Header("Air")]
         [SerializeField, Tooltip("movement speed when not grounded")] private LevelingValue<float> airMoveSpeed = 3f;
+        public void UpdateAirMoveSpeed() => airMoveSpeed.LevelUp();
         [SerializeField, Tooltip("adjusts amount of momentum lost when airborn")] private float airResitance = 1f;
         #endregion
 
