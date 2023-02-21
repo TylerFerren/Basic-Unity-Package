@@ -146,7 +146,7 @@ namespace Codesign {
                     targetPosition = cam.ScreenToWorldPoint(new Vector3(mousePosition.x, mousePosition.y, cam.nearClipPlane));
                     break;
                 case RangedTargetingType.AutomaticTargeting:
-                    if(targetedObject) targetPosition = targetedObject.transform.position;
+                    if(targetedObject) targetPosition = targetedObject.bounds.center;
                     break;
 
             }
