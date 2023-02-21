@@ -100,7 +100,7 @@ namespace Codesign
 
 #if UNITY_EDITOR
 
-    protected bool showGizmos;
+    [SerializeField, HideInInspector] protected bool showGizmos;
     [SerializeField, ShowIf("showGizmos")] private Vector3 gizmosOffset = new Vector3();
 
     [ContextMenu("Show as Gizmos")]
@@ -115,7 +115,7 @@ namespace Codesign
         {
             Vector3 position = transform.position + gizmosOffset;
 
-            GUIContent content = new GUIContent(currentValue.ToString() + "/" + maxValue.Value.ToString() + " HP");
+            GUIContent content = new GUIContent(currentValue.ToString("D") + "/" + maxValue.Value.ToString("D") + " HP");
             GUIStyle labelStyle = new GUIStyle() { alignment = TextAnchor.MiddleCenter, richText = false, fixedWidth = 120, fixedHeight = 30, fontSize = 12, fontStyle = FontStyle.Bold};
             labelStyle.normal.textColor = inspectorBarColor;
             Handles.Label(position, content, labelStyle);
