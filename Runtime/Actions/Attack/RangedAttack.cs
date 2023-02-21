@@ -55,7 +55,7 @@ namespace Codesign {
 
         private IEnumerator AutomaticTargeting() {
             while (targetingType == RangedTargetingType.AutomaticTargeting) {
-                var targetOptions = Physics.OverlapSphere(transform.position, AttackRange, ~attackableLayers);
+                var targetOptions = Physics.OverlapSphere(transform.position, AttackRange, attackableLayers);
                 if (targetOptions.FirstOrDefault())
                 {
                     AutomaticIsActive = true;
@@ -135,7 +135,7 @@ namespace Codesign {
 
             switch (targetingType) {
                 case RangedTargetingType.First_ThirdPerson:
-                    if (Physics.Raycast(cam.transform.position, cam.transform.forward, out RaycastHit hit, AttackRange, ~attackableLayers, QueryTriggerInteraction.Ignore))
+                    if (Physics.Raycast(cam.transform.position, cam.transform.forward, out RaycastHit hit, AttackRange, attackableLayers, QueryTriggerInteraction.Ignore))
                         targetPosition = hit.point;
                     else
                         targetPosition = cam.transform.position + cam.transform.forward * AttackRange;
