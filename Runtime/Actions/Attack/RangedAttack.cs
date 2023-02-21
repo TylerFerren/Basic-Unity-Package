@@ -21,7 +21,6 @@ namespace Codesign {
         [SerializeField, Tooltip("the origin of the Ranged Attack")] protected Vector3 firePoint;
 
         [SerializeField] protected RangedTargetingType targetingType = RangedTargetingType.First_ThirdPerson;
-        [ShowInInspector, ShowIf("targetingType", RangedTargetingType.AutomaticTargeting)] public LayerMask TartgetableObjects;
 
         [SerializeField, FoldoutGroup("FireRate")] protected LevelingValue<float> fireRate;
         [SerializeField, FoldoutGroup("FireRate")] protected bool continuousFire;
@@ -136,7 +135,7 @@ namespace Codesign {
 
             switch (targetingType) {
                 case RangedTargetingType.First_ThirdPerson:
-                    if (Physics.Raycast(cam.transform.position, cam.transform.forward, out RaycastHit hit, AttackRange, attackableLayers, QueryTriggerInteraction.Ignore))
+                    if (Physics.Raycast(cam.transform.position, cam.transform.forward, out RaycastHit hit, AttackRange, ~attackableLayers, QueryTriggerInteraction.Ignore))
                         targetPosition = hit.point;
                     else
                         targetPosition = cam.transform.position + cam.transform.forward * AttackRange;
