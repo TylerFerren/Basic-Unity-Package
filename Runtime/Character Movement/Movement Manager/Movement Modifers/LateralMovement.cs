@@ -52,7 +52,8 @@ namespace Codesign
 
         #region modifiers
         private bool sprinting { get; set; }
-        public float SpeedModifier { get; set; } = 1;
+        private float speedModifier = 1;
+        public float SpeedModifier { get { return speedModifier; } set {speedModifier = value;} }
         #endregion
 
         #region outputs

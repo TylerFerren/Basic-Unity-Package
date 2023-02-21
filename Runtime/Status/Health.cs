@@ -8,7 +8,6 @@ namespace Codesign
     public class Health : Status, IDamageable
     {
         [field: SerializeField] public List<Collider> CriticalCollider { get; private set; } = new List<Collider>();
-        [SerializeField] private float CriticalMultiplier = 2;
 
         [FoldoutGroup("Event")] public UnityEvent OnBirth = new UnityEvent();
         [FoldoutGroup("Event")] public UnityEvent OnDeath = new UnityEvent();
