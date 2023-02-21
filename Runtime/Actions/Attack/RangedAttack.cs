@@ -157,9 +157,8 @@ namespace Codesign {
 
         public void LinecastShot() {
             Debug.DrawLine(origin, targetPosition, Color.HSVToRGB(Random.Range(0.01f, 0.99f), 1, 1), 2);
-            if (Physics.Linecast(origin, targetPosition, out RaycastHit hit, ~attackableLayers, QueryTriggerInteraction.Ignore))
+            if (Physics.Linecast(origin, targetPosition, out RaycastHit hit, attackableLayers, QueryTriggerInteraction.Ignore))
             {
-
                 var health = hit.transform.gameObject.GetComponent<Health>();
 
                 Hit(hit.collider, health);
