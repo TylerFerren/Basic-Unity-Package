@@ -7,6 +7,7 @@ using UnityEngine.Events;
 using Unity.VisualScripting;
 using System.Linq;
 using UnityEditor;
+using Sirenix.Utilities;
 
 namespace Codesign {
     public class RangedAttack : Attack
@@ -56,6 +57,14 @@ namespace Codesign {
         private IEnumerator AutomaticTargeting() {
             while (targetingType == RangedTargetingType.AutomaticTargeting) {
                 var targetOptions = Physics.OverlapSphere(transform.position, AttackRange, attackableLayers);
+
+                targetOptions.Sort((a, b) =>
+                {
+                    float distA = Vector3.Distance(transform.position, a.transform.position);
+                    float distB = Vector3.Distance(transform.position, b.transform.position);
+                    return distA.CompareTo(distB);
+                });
+
                 if (targetOptions.FirstOrDefault())
                 {
                     AutomaticIsActive = true;
