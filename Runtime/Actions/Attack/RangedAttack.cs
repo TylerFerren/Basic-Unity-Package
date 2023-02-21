@@ -6,6 +6,7 @@ using Sirenix.OdinInspector;
 using UnityEngine.Events;
 using Unity.VisualScripting;
 using System.Linq;
+using UnityEditor;
 
 namespace Codesign {
     public class RangedAttack : Attack
@@ -173,6 +174,7 @@ namespace Codesign {
         private void OnDrawGizmosSelected()
         {
             Gizmos.DrawSphere(transform.TransformPoint(firePoint), 0.1f);
+            Handles.DrawWireDisc(transform.position, transform.up, AttackRange);
         }
 
     }
