@@ -10,10 +10,10 @@ namespace Codesign
     public abstract class Attack : Action
     {
         [Title("Attack Settings")]
-        [SerializeField] protected LevelingValue<float> damage = 10;
-        [SerializeField] protected LevelingValue<float> criticalDamage;
-
         [SerializeField] protected LayerMask attackableLayers;
+
+        [SerializeField, FoldoutGroup("Damage")] protected LevelingValue<float> damage = 10;
+        [SerializeField, FoldoutGroup("Damage")] protected LevelingValue<float> criticalDamage;
 
         [SerializeField, FoldoutGroup("Events")] protected UnityEvent<Collider> OnHit;
         [SerializeField, FoldoutGroup("Events")] protected UnityEvent<Collider> OnCriticalHit;
@@ -33,6 +33,8 @@ namespace Codesign
 
         public virtual void Hit(Collider collider, Health health)
         {
+            
+            if (!health) return;
             if (health.CriticalCollider.Contains(collider))
             {
                 health.Damage(criticalDamage);
@@ -50,8 +52,8 @@ namespace Codesign
                 OnKill?.Invoke(collider);
                 kill = true;
             }
-
             hits.Add(new HitInfo(this, collider, kill));
+
         }
 
         public void UpdateAttack(float _damage, float _criticalDamage)
