@@ -115,7 +115,7 @@ namespace Codesign
         {
             Vector3 position = transform.position + gizmosOffset;
 
-            GUIContent content = new GUIContent(currentValue.ToString("D") + "/" + maxValue.Value.ToString("D") + " HP");
+            GUIContent content = new GUIContent(currentValue.ToString() + "/" + maxValue.Value.ToString() + " HP");
             GUIStyle labelStyle = new GUIStyle() { alignment = TextAnchor.MiddleCenter, richText = false, fixedWidth = 120, fixedHeight = 30, fontSize = 12, fontStyle = FontStyle.Bold};
             labelStyle.normal.textColor = inspectorBarColor;
             Handles.Label(position, content, labelStyle);
