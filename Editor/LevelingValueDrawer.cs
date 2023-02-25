@@ -13,10 +13,10 @@ namespace Codesign
 
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
         {
+            EditorGUI.BeginProperty(position, label, property);
             //if (label.text == "") label.text = property.displayName;
-
             var labelPosition = new Rect(position.x, position.y, EditorGUIUtility.labelWidth, EditorGUIUtility.singleLineHeight);
-            show = EditorGUI.Foldout(labelPosition, show, property.displayName);
+            show = EditorGUI.Foldout(labelPosition, show, label);
 
             var valuePosition = new Rect(position.x + EditorGUIUtility.labelWidth + 2, position.y, (position.width - labelPosition.width - 3) * 0.6666f , EditorGUIUtility.singleLineHeight);
             EditorGUI.PropertyField(valuePosition, property.FindPropertyRelative("Value"), GUIContent.none);
@@ -34,6 +34,7 @@ namespace Codesign
                 property.FindPropertyRelative("Category").intValue = returnedIndex;
                 EditorGUI.indentLevel--;
             }
+            EditorGUI.EndProperty();
 
         }
     }

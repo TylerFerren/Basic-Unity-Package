@@ -13,7 +13,7 @@ namespace Codesign
         public int UpgradePoints { get { return upgradePoints; } set { upgradePoints = value; } }
         [InfoBox("Repeated Stat Category", InfoMessageType.Warning, "RepeatedCategoriesWarning")]
         [SerializeField] public List<Stat> Stats;
-
+        [Space]
         [ShowInInspector] public static string[] StatCategories = new string[7]{"None", "Health", "Stregth", "Speed", "Stanima", "Agility", "Dexterity" };
 
         [SerializeField, HideInInspector] public LevelingValueRefrencs levelingValues = new LevelingValueRefrencs();
@@ -24,7 +24,13 @@ namespace Codesign
             foreach (Stat stat in Stats) {
                 stat.levelingValues = new List<LevelingValue<float>>();
             }
-            var components = transform.parent.GetComponentsInChildren(typeof(MonoBehaviour), true);
+            Component[] components;
+
+            if(transform.root != transform)
+                components = transform.parent.GetComponentsInChildren(typeof(MonoBehaviour), true);
+            else
+                components = transform.GetComponentsInChildren(typeof(MonoBehaviour), true);
+
             foreach (var component in components) {
                 FieldInfo[] fields = component.GetType().GetFields(BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public);
                 foreach (FieldInfo field in fields)
@@ -58,6 +64,7 @@ namespace Codesign
                 stat.manager = this;
             }
             FindLevelingValues();
+
         }
 
         public void OnEnable()

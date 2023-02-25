@@ -10,6 +10,7 @@ namespace Codesign
     [Serializable]
     public class LevelingValue<T> : ISerializationCallbackReceiver where T:struct, IConvertible, IComparable<T>, IEquatable<T>, IFormattable
     {
+        
         public LevelingValue(T value)
         {
             Value = value;

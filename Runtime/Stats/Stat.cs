@@ -19,9 +19,12 @@ namespace Codesign
         public Stat(StatManager statManager) { manager = statManager; }
         public StatManager manager { get; set; }
 
-        [field: SerializeField, CustomValueDrawer("NameSelectorDrawer")] public int Category { get; set; } = 1;
-        [field: SerializeField] public int CurrentValue { get; set; } = 0;
-        [field: SerializeField] public int MaxValue { get; set; } = 10;
+        [SerializeField, CustomValueDrawer("NameSelectorDrawer")] private int category = 1;
+        public int Category { get { return category; } set { category = value; } }
+        [SerializeField] private int currentValue = 0;
+        public int CurrentValue { get { return currentValue; } set { currentValue = value; } }
+        [SerializeField] private int maxValue = 10;
+        public int MaxValue { get { return maxValue; } set { maxValue = value; } }
 
         [ShowInInspector] public List<LevelingValue<float>> levelingValues = new List<LevelingValue<float>>();
 
@@ -29,14 +32,14 @@ namespace Codesign
         [FoldoutGroup("Event")]
         public UnityEvent<int> OnStatUpdate;
 
-        [Button]
         public void StatUpgrade()
         {
             if (manager.UpgradePoints <= 0) return;
             if (CurrentValue == MaxValue) return;
             CurrentValue++;
             manager.UpgradePoints--;
-            foreach (LevelingValue<float> value in levelingValues) {
+            foreach (LevelingValue<float> value in levelingValues)
+            {
                 value.LevelUp(CurrentValue);
             }
 
