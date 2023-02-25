@@ -24,13 +24,13 @@ namespace Codesign
 
         public float Evaluate(float x)
         {
-            var y = Mathf.Pow(x * LinearGain - 1, ExponetialGain) + Floor;
+            var y = Mathf.Pow(x * LinearGain, ExponetialGain) + Floor;
             return y;
         }
 
         public int EvaluateInt(int x)
         {
-            int y = Mathf.RoundToInt(Mathf.Pow(x * LinearGain - 1, ExponetialGain) + Floor);
+            int y = Mathf.RoundToInt(Mathf.Pow(x * LinearGain, ExponetialGain) + Floor);
             return y;
         }
 

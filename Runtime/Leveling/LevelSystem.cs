@@ -38,7 +38,6 @@ namespace Codesign
 
         void LevelUp()
         {
-
             CurrentExperience -= ExperienceToNextLevel;
             CurrentLevel = Mathf.Clamp(CurrentLevel + 1, 0, MaxLevel);
             SetExperienceToNextLevel();
@@ -47,7 +46,7 @@ namespace Codesign
 
         void SetExperienceToNextLevel()
         {
-            ExperienceToNextLevel = experienceCurve.EvaluateInt(CurrentLevel + 1);
+            ExperienceToNextLevel = experienceCurve.EvaluateInt(CurrentLevel);
         }
 
         public void GetExperienceSource(ExperienceSource source)

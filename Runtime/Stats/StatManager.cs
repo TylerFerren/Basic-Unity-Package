@@ -3,46 +3,94 @@ using System.Collections.Generic;
 using Sirenix.OdinInspector;
 using UnityEngine;
 using System;
+using System.Reflection;
 
 namespace Codesign
 {
     public class StatManager : MonoBehaviour
     {
-        [SerializeField] int UpgradePoints = 0;
+        [SerializeField] int upgradePoints = 0;
+        public int UpgradePoints { get { return upgradePoints; } set { upgradePoints = value; } }
         [InfoBox("Repeated Stat Category", InfoMessageType.Warning, "RepeatedCategoriesWarning")]
-        [SerializeField] List<Stat> Stats;
+        [SerializeField] public List<Stat> Stats;
 
-        [ShowInInspector] public static string[] StatCategories = new string[6]{ "Health", "Stregth", "Speed", "Stanima", "Agility", "Dexterity" };
+        [ShowInInspector] public static string[] StatCategories = new string[7]{"None", "Health", "Stregth", "Speed", "Stanima", "Agility", "Dexterity" };
+
+        [SerializeField, HideInInspector] public LevelingValueRefrencs levelingValues = new LevelingValueRefrencs();
+
+        public void FindLevelingValues()
+        {
+            levelingValues = new LevelingValueRefrencs();
+            foreach (Stat stat in Stats) {
+                stat.levelingValues = new List<LevelingValue<float>>();
+            }
+            var components = transform.parent.GetComponentsInChildren(typeof(MonoBehaviour), true);
+            foreach (var component in components) {
+                FieldInfo[] fields = component.GetType().GetFields(BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public);
+                foreach (FieldInfo field in fields)
+                {
+                    if (field.FieldType == typeof(LevelingValue<float>))
+                    {
+                        var levelingValue = field.GetValue(component) as LevelingValue<float>;
+                        var stat = Stats.Find(n => n.Category == levelingValue.Category);
+                        if(stat != null && !stat.levelingValues.Contains(levelingValue)) stat.levelingValues.Add(levelingValue);
+                    }
+
+                    #region subFields
+                    //FieldInfo[] subfields = field.FieldType.GetFields(BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public);
+                    //foreach (FieldInfo subfield in subfields) {
+                    //    if (subfield.FieldType == typeof(LevelingValue<float>))
+                    //    {
+                    //        Debug.Log(field.GetValue(component) as LevelingValue<float>);
+
+                    //        var levelingValue = subfield.GetValue(field.GetValue(component)) as LevelingValue<float>;
+                    //        levelingValue.statManager = this;
+                    //    }
+                    //}
+                    #endregion
+                }
+            }
+        }
+
+        private void OnValidate()
+        {
+            foreach (Stat stat in Stats) {
+                stat.manager = this;
+            }
+            FindLevelingValues();
+        }
+
         public void OnEnable()
         {
-            if (StatCategories == null) StatCategories = new string[0];
+            StatCategories ??= new string[0];
         }
 
         public void AddUpgradePoint(int addedPoints)
         {
-            UpgradePoints += addedPoints;
+            upgradePoints += addedPoints;
         }
 
         public void UpgradeStat(Stat stat)
         {
-            if (UpgradePoints <= 0) return;
+            if (upgradePoints <= 0) return;
             stat.StatUpgrade();
-            UpgradePoints--;
+            upgradePoints--;
         }
 
         public void UpgradeStat(string category)
         {
-
             var stat = Stats.Find(n => n.Category == Array.IndexOf(StatCategories, category));
-            if (UpgradePoints <= 0) return;
+            if (upgradePoints <= 0) return;
             stat.StatUpgrade();
-            UpgradePoints--;
+            upgradePoints--;
         }
 
-        private bool RepeatedCategoriesWarning()
+        public bool RepeatedCategoriesWarning()
         {
             return Stats.GroupBy(x => x.Category).Any(g => g.Count() > 1);
         }
     }
 
+    [Serializable]
+    public class LevelingValueRefrencs : Dictionary<Stat, LevelingValue<float>> { }
 }

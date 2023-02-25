@@ -14,38 +14,39 @@ namespace Codesign
     [CustomPropertyDrawer(typeof(EvaluationCurve))]
     public class EvaluationCurveDrawer : PropertyDrawer
     {
-        private bool show = true;
+        private bool show;
 
         [UnityEngine.Range(2, 250)] private int curveResolution = 50;
 
-        private float ExponetialGain;
-        private float LinearGain;
-        private float Floor;
-
-        public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
+        public override void OnGUI(Rect rect, SerializedProperty property, GUIContent label)
         {
-            ExponetialGain = property.FindPropertyRelative("ExponetialGain").floatValue;
-            LinearGain = property.FindPropertyRelative("LinearGain").floatValue;
-            Floor = property.FindPropertyRelative("Floor").floatValue;
-            //Debug.Log(property.serializedObject.targetObject.name);
-            show = EditorGUI.Foldout(position, show, label);
+            show = EditorGUI.Foldout(rect, show, label);
             if (show)
             {
                 EditorGUI.indentLevel++;
                 EditorGUILayout.PropertyField(property.FindPropertyRelative("Floor"), new GUIContent("Floor"));
                 EditorGUILayout.PropertyField(property.FindPropertyRelative("LinearGain"), new GUIContent("Linear Gain"));
                 EditorGUILayout.PropertyField(property.FindPropertyRelative("ExponetialGain"), new GUIContent("Exponetial Gain"));
-
-                EditorGUILayout.BeginHorizontal();
-                //EditorGUILayout.PropertyField(property.FindPropertyRelative("TestInput"), new GUIContent("Test Input"));
-                //EditorGUILayout.PropertyField(property.FindPropertyRelative("testOutput"), GUIContent.none);
-                EditorGUILayout.EndHorizontal();
                 EditorGUI.indentLevel--;
             }
         }
 
+        public Rect GetNextPosition(Rect rect, int position) {
+            Rect nextPosition = rect;
+            nextPosition.y += EditorGUIUtility.singleLineHeight * position;
+            return nextPosition;
+        }
+
+        private float ExponetialGain;
+        private float LinearGain;
+        private float Floor;
+
+
         private void v1Drawer(SerializedProperty property)
         {
+            ExponetialGain = property.FindPropertyRelative("ExponetialGain").floatValue;
+            LinearGain = property.FindPropertyRelative("LinearGain").floatValue;
+            Floor = property.FindPropertyRelative("Floor").floatValue;
 
             EditorGUILayout.BeginHorizontal();
 

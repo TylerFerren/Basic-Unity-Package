@@ -37,16 +37,16 @@ namespace Codesign {
         {
             if (!action && !inputRef) return;
             inputRef.action.Enable();
-            inputRef.action.performed += action.Trigger;
-            inputRef.action.canceled += action.Release;
+            inputRef.action.performed += action.InputMethod;
+            inputRef.action.canceled += action.InputMethod;
         }
 
         public void DisableInstance()
         {
             if (!action && !inputRef) return;
             inputRef.action.Disable();
-            inputRef.action.performed -= action.Trigger;
-            inputRef.action.canceled -= action.Release;
+            inputRef.action.performed -= action.InputMethod;
+            inputRef.action.canceled -= action.InputMethod;
         }
 
     }

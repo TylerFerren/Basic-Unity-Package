@@ -21,16 +21,15 @@ namespace Codesign
             hitBox.enabled = false;
         }
 
-        public override void Trigger(InputAction.CallbackContext context)
+        public override IEnumerator Trigger()
         {
-            if (ActiveCooldown != null) return;
-            base.Trigger(context);
+            yield return StartCoroutine(base.Trigger());
             StartCoroutine(Attack());
         }
 
-        public override void Release(InputAction.CallbackContext context)
+        public override IEnumerator Release()
         {
-            base.Release(context);
+            yield return StartCoroutine(base.Release());
         }
 
         public IEnumerator Attack()

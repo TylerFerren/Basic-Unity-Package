@@ -4,31 +4,50 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using Sirenix.OdinInspector;
 using UnityEngine.Events;
+using System.Linq;
+using Sirenix.Utilities;
 
 namespace Codesign
 {
     public abstract class Attack : Action
     {
+        protected enum AttackTargetingType { First_ThirdPerson, MousePosition, AutomaticTargeting, None }
+
         [Title("Attack Settings")]
         [SerializeField] protected LayerMask attackableLayers;
 
         [SerializeField, FoldoutGroup("Damage")] protected LevelingValue<float> damage = 10;
-        [SerializeField, FoldoutGroup("Damage")] protected LevelingValue<float> criticalDamage;
+        public void LevelUpDamage() => damage.LevelUp();
+        [SerializeField, FoldoutGroup("Damage")] protected LevelingValue<float> criticalDamage = 20;
+        public void LevelUpCriticalDamage() => criticalDamage.LevelUp();
+
+        [SerializeField] protected LevelingValue<float> AttackRange = 3;
+
+        [SerializeField] protected AttackTargetingType targetingType = AttackTargetingType.First_ThirdPerson;
+
+        [ReadOnly] public Collider targetedObject;
 
         [SerializeField, FoldoutGroup("Events")] protected UnityEvent<Collider> OnHit;
         [SerializeField, FoldoutGroup("Events")] protected UnityEvent<Collider> OnCriticalHit;
         [SerializeField, FoldoutGroup("Events")] protected UnityEvent<Collider> OnKill;
 
-        [SerializeField, ReadOnly] private List<HitInfo> hits = new List<HitInfo>();
+        public List<HitInfo> hits { get; private set;} = new List<HitInfo>();
 
-        public override void Trigger(InputAction.CallbackContext context)
+        public override void OnEnable()
         {
-            base.Trigger(context);
+            base.OnEnable();
+            if(targetingType == AttackTargetingType.AutomaticTargeting)
+                    StartCoroutine(AutomaticTargeting());
         }
 
-        public override void Release(InputAction.CallbackContext context)
+        public override IEnumerator Trigger()
         {
-            base.Release(context);
+            yield return StartCoroutine(base.Trigger());
+        }
+
+        public override IEnumerator Release()
+        {
+            yield return StartCoroutine(base.Release());
         }
 
         public virtual void Hit(Collider collider, Health health)
@@ -56,12 +75,32 @@ namespace Codesign
 
         }
 
-        public void UpdateAttack(float _damage, float _criticalDamage)
+        protected IEnumerator AutomaticTargeting()
         {
-            damage = _damage;
-            criticalDamage = _criticalDamage;
+            //Searches for a list of targets every fixed update
+            while (targetingType == AttackTargetingType.AutomaticTargeting)
+            {
+                var targetOptions = Physics.OverlapSphere(transform.position, AttackRange, attackableLayers);
+
+                targetOptions.Sort((a, b) =>
+                {
+                    float distA = Vector3.Distance(transform.position, a.transform.position);
+                    float distB = Vector3.Distance(transform.position, b.transform.position);
+                    return distA.CompareTo(distB);
+                });
+
+                if (targetOptions.FirstOrDefault())
+                {
+                    AutomaticIsActive = true;
+                    targetedObject = targetOptions.FirstOrDefault();
+                }
+                else if (AutomaticIsActive)
+                {
+                    IsActive = false;
+                    AutomaticIsActive = false;
+                }
+                yield return new WaitForFixedUpdate();
+            }
         }
-
     }
-
 }

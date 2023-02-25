@@ -10,11 +10,11 @@ namespace Codesign
     {
         public bool Enabled;
         [field: SerializeField, ProgressBar(0, "HeatLimit", 0.8f, 0.2f, 0.2f)] public float currentHeat { get; set; } = 0;
-        [field: SerializeField] public float HeatLimit { get; set; } = 100;
-        [field: SerializeField] public float heatBuildUp { get; set; } = 3;
-        [field: SerializeField] public float heatDisapation { get; set; } = 5;
-        [field: SerializeField] public float cooledDownLimit { get; set; } = 20;
-        [field: SerializeField] public float HeatCooldownDelay { get; set; } = 1;
+        [field: SerializeField] public LevelingValue<float> HeatLimit { get; set; } = 100;
+        [field: SerializeField] public LevelingValue<float> heatBuildUp { get; set; } = 3;
+        [field: SerializeField] public LevelingValue<float> heatDisapation { get; set; } = 5;
+        [field: SerializeField] public LevelingValue<float> cooledDownLimit { get; set; } = 20;
+        [field: SerializeField] public LevelingValue<float> HeatCooldownDelay { get; set; } = 1;
         [field: SerializeField] public bool isOverheated { get; set; }
         public Coroutine heatCooldown;
 

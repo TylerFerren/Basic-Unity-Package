@@ -102,6 +102,7 @@ namespace Codesign
 
     [SerializeField, HideInInspector] protected bool showGizmos;
     [SerializeField, ShowIf("showGizmos")] private Vector3 gizmosOffset = new Vector3();
+    [SerializeField, ShowIf("showGizmos"), Range(5, 20)] private int gizmosSize = 7;
 
     [ContextMenu("Show as Gizmos")]
     private void SwitchShowGizmos()
@@ -116,7 +117,7 @@ namespace Codesign
             Vector3 position = transform.position + gizmosOffset;
 
             GUIContent content = new GUIContent(Mathf.Round(currentValue).ToString() + "/" + maxValue.Value.ToString() + " HP");
-            GUIStyle labelStyle = new GUIStyle() { alignment = TextAnchor.MiddleCenter, richText = false, fixedWidth = 120, fixedHeight = 30, fontSize = 12, fontStyle = FontStyle.Bold};
+            GUIStyle labelStyle = new GUIStyle() { alignment = TextAnchor.MiddleCenter, richText = false, fixedWidth = 120, fixedHeight = 30, fontSize = gizmosSize, fontStyle = FontStyle.Bold};
             labelStyle.normal.textColor = inspectorBarColor;
             Handles.Label(position, content, labelStyle);
         }

@@ -5,11 +5,9 @@ using UnityEngine;
 
 namespace Codesign
 {
-
     [System.Serializable, Toggle("Enabled")]
-    public class AmmoSystem
+    public class AmmoSystem : ActionSystem
     {
-        public bool Enabled;
         [field: SerializeField] public int maxAmmo { get; set; } = 100;
         [field: SerializeField] public int currentAmmo { get; set; } = 50;
         [field: SerializeField] public bool useMagazine { get; set; }
