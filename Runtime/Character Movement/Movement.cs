@@ -72,6 +72,7 @@ namespace Codesign
         [FoldoutGroup("input"), SerializeField, ShowIf("useCustomInput")] private InputActionReference DodgeInput;
 
         [FoldoutGroup("Animation"), SerializeField] private Animator AnimSpeed;
+        [SerializeField] private bool LockCursor;
         #endregion
 
         #region Inputs
@@ -125,6 +126,7 @@ namespace Codesign
         private Vector3 BalancedMovement;
         #endregion
 
+
         #endregion
 
         #region Unity Event Methods
@@ -155,7 +157,7 @@ namespace Codesign
 
         public void Start()
         {
-            Cursor.lockState = CursorLockMode.Locked;
+            if(LockCursor) Cursor.lockState = CursorLockMode.Locked;
 
             if (!cam) cam = Camera.main;
 

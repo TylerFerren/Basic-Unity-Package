@@ -42,6 +42,8 @@ namespace Codesign
         public Collider CurrentGround { get; set; }
         public Vector3 ContactNormal { get; set; } = Vector3.up;
 
+        [SerializeField] private bool LockCursor;
+
         private float timeTillLand;
 
         [FoldoutGroup("Events"), SerializeField] private UnityEvent<bool> grounded;
@@ -57,7 +59,7 @@ namespace Codesign
 
         private void Start()
         {
-            Cursor.lockState = CursorLockMode.Locked;
+            if(LockCursor) Cursor.lockState = CursorLockMode.Locked;
         }
 
         public void FixedUpdate()
