@@ -53,7 +53,7 @@ namespace Codesign {
                 inputRef.action.performed -= InputMethod;
                 inputRef.action.canceled -= InputMethod;
             }
-            if (ActiveAutomaticCycle != null) StopCoroutine(ActiveAutomaticCycle);
+            else if (ActiveAutomaticCycle != null) StopCoroutine(ActiveAutomaticCycle);
         }
 
         public IEnumerator AutomaticCycle() {
