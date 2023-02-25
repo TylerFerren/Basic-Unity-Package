@@ -31,11 +31,14 @@ namespace Codesign {
 
         public virtual void OnEnable()
         {
-            if (!inputRef) return;
-            inputRef.action.Enable();
-            inputRef.action.performed += InputMethod;
-            inputRef.action.canceled += InputMethod;
-            if (triggerType == ActionTriggerType.Automatic)
+            if (triggerType == ActionTriggerType.UserInput)
+            {
+                if(!inputRef) return;
+                inputRef.action.Enable();
+                inputRef.action.performed += InputMethod;
+                inputRef.action.canceled += InputMethod;
+            }
+            else if (triggerType == ActionTriggerType.Automatic)
             {
                 ActiveAutomaticCycle = StartCoroutine(AutomaticCycle());
             }
@@ -43,11 +46,14 @@ namespace Codesign {
 
         public virtual void OnDisable()
         {
-            if (!inputRef) return;
-            inputRef.action.Disable();
-            inputRef.action.performed -= InputMethod;
-            inputRef.action.canceled -= InputMethod;
-            if(ActiveAutomaticCycle != null) StopCoroutine(ActiveAutomaticCycle);
+            if (triggerType == ActionTriggerType.UserInput)
+            {
+                if (!inputRef) return;
+                inputRef.action.Disable();
+                inputRef.action.performed -= InputMethod;
+                inputRef.action.canceled -= InputMethod;
+            }
+            if (ActiveAutomaticCycle != null) StopCoroutine(ActiveAutomaticCycle);
         }
 
         public IEnumerator AutomaticCycle() {
