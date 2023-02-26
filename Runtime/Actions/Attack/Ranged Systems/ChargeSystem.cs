@@ -22,6 +22,7 @@ namespace Codesign
         {
             chargeTimer = 0;
             onChargeStart?.Invoke();
+            onChargeProgress?.Invoke(0);
             while (chargeTimer < chargeRate)
             {
                 onChargeProgress?.Invoke(chargeTimer / chargeRate);
