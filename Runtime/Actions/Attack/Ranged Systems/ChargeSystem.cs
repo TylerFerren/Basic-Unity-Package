@@ -15,6 +15,7 @@ namespace Codesign
         private float chargeTimer;
 
         [SerializeField, FoldoutGroup("Events")] protected UnityEvent onChargeStart;
+        [SerializeField, FoldoutGroup("Events")] protected UnityEvent<float> onChargeProgress;
         [SerializeField, FoldoutGroup("Events")] protected UnityEvent onChargeFinish;
 
         public IEnumerator Charge()
@@ -23,9 +24,12 @@ namespace Codesign
             onChargeStart?.Invoke();
             while (chargeTimer < chargeRate)
             {
+                onChargeProgress?.Invoke(chargeTimer / chargeRate);
                 chargeTimer += Time.deltaTime;
                 yield return null;
             }
+            onChargeProgress?.Invoke(1);
+            yield return null;
             onChargeFinish?.Invoke();
         }
 
