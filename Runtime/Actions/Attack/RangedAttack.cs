@@ -115,7 +115,9 @@ namespace Codesign {
                     break;
                 case AttackTargetingType.MousePosition:
                     Vector2 mousePosition = Mouse.current.position.ReadValue();
-                    targetPosition = cam.ScreenToWorldPoint(new Vector3(mousePosition.x, mousePosition.y, cam.nearClipPlane));
+                    Plane attackHeightPlane = new Plane(transform.up, firePoint);
+                    attackHeightPlane.Raycast(cam.ScreenPointToRay(mousePosition), out float distance);
+                    targetPosition = cam.ScreenToWorldPoint(new Vector3(mousePosition.x, mousePosition.y, distance));
                     break;
                 case AttackTargetingType.AutomaticTargeting:
                     if(targetedObject) targetPosition = targetedObject.bounds.center;
