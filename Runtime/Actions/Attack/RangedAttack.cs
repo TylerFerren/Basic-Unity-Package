@@ -118,6 +118,8 @@ namespace Codesign {
                     Plane attackHeightPlane = new Plane(transform.up, firePoint);
                     attackHeightPlane.Raycast(cam.ScreenPointToRay(mousePosition), out float distance);
                     targetPosition = cam.ScreenToWorldPoint(new Vector3(mousePosition.x, mousePosition.y, distance));
+                    targetPosition = Vector3.MoveTowards(transform.TransformPoint(firePoint), targetPosition, AttackRange);
+                    Debug.Log(targetPosition);
                     break;
                 case AttackTargetingType.AutomaticTargeting:
                     if(targetedObject) targetPosition = targetedObject.bounds.center;

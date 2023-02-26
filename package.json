@@ -1,7 +1,7 @@
 {
   "name": "com.codesign.basic-unity-package",
   "displayName": "Codesign - Basic Unity Package",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Basic Tools for starting a game",
   "dependencies": {
     "com.unity.inputsystem": "",
