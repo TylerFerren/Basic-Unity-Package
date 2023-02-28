@@ -88,7 +88,6 @@ namespace Codesign
             var stat = Stats.Find(n => n.Category == Array.IndexOf(StatCategories, category));
             if (upgradePoints <= 0) return;
             stat.StatUpgrade();
-            upgradePoints--;
         }
 
         public bool RepeatedCategoriesWarning()
