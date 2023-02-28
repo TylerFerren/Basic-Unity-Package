@@ -35,6 +35,5 @@ namespace Codesign {
             CurrentTimer = 0;
             ActiveCooldown = null;
         }
-
     }
 }
