@@ -12,7 +12,6 @@ namespace Codesign {
 
         [Title("Action Settings")]
         [field: SerializeField] public bool IsActive { get; set; } = false;
-        public List<Collider> ActorColliers;
 
         [SerializeField] protected ActionTriggerType triggerType = ActionTriggerType.UserInput;
         [SerializeField, ShowIf("triggerType", ActionTriggerType.UserInput)] protected InputActionReference inputRef;

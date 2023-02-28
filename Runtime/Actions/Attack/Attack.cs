@@ -51,7 +51,6 @@ namespace Codesign
 
         public virtual void Hit(RaycastHit hit, Health health)
         {
-            
             if (!health) return;
             if (health.CriticalCollider.Contains(hit.collider))
             {

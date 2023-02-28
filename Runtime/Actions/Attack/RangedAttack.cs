@@ -144,10 +144,8 @@ namespace Codesign {
 
         public void LinecastShot() {
             Debug.DrawLine(origin, targetPosition, Color.HSVToRGB(Random.Range(0.01f, 0.99f), 1, 1), 2);
-            var hits = Physics.RaycastAll(origin, targetPosition, AttackRange, attackableLayers, QueryTriggerInteraction.Ignore).ToList();
-            hits.RemoveAll(h => ActorColliers.Contains(h.collider));
-            var hit = hits.FirstOrDefault();
-            if (hit.collider != null)
+            
+            if (Physics.Linecast(origin, targetPosition, out RaycastHit hit, attackableLayers, QueryTriggerInteraction.Ignore))
             {
                 var health = hit.transform.gameObject.GetComponentInChildren<Health>();
                 Hit(hit, health);
