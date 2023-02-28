@@ -14,7 +14,7 @@ namespace Codesign
         [InfoBox("Repeated Stat Category", InfoMessageType.Warning, "RepeatedCategoriesWarning")]
         [SerializeField] public List<Stat> Stats;
         [Space]
-        [ShowInInspector] public static string[] StatCategories = new string[7]{"None", "Health", "Stregth", "Speed", "Stanima", "Agility", "Dexterity" };
+        [ShowInInspector] public static string[] StatCategories = new string[7]{"None", "Health", "Strength", "Speed", "Stanima", "Agility", "Dexterity" };
 
         [SerializeField, HideInInspector] public LevelingValueRefrencs levelingValues = new LevelingValueRefrencs();
 
