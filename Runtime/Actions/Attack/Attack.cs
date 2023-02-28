@@ -15,11 +15,10 @@ namespace Codesign
 
         [Title("Attack Settings")]
         [SerializeField] protected LayerMask attackableLayers;
+        public LayerMask AttackableLayers { get { return attackableLayers; } set { attackableLayers = value;} }
 
         [SerializeField, FoldoutGroup("Damage")] protected LevelingValue<float> damage = 10;
-        public void LevelUpDamage() => damage.LevelUp();
         [SerializeField, FoldoutGroup("Damage")] protected LevelingValue<float> criticalDamage = 20;
-        public void LevelUpCriticalDamage() => criticalDamage.LevelUp();
 
         [SerializeField] protected LevelingValue<float> AttackRange = 3;
 
@@ -50,28 +49,28 @@ namespace Codesign
             yield return StartCoroutine(base.Release());
         }
 
-        public virtual void Hit(Collider collider, Health health)
+        public virtual void Hit(RaycastHit hit, Health health)
         {
             
             if (!health) return;
-            if (health.CriticalCollider.Contains(collider))
+            if (health.CriticalCollider.Contains(hit.collider))
             {
                 health.Damage(criticalDamage);
-                OnCriticalHit?.Invoke(collider);
+                OnCriticalHit?.Invoke(hit.collider);
             }
             else
             {
                 health.Damage(damage);
-                OnHit?.Invoke(collider);
+                OnHit?.Invoke(hit.collider);
             }
 
             bool kill = false;
             if (health.CurrentValue <= 0)
             {
-                OnKill?.Invoke(collider);
+                OnKill?.Invoke(hit.collider);
                 kill = true;
             }
-            hits.Add(new HitInfo(this, collider, kill));
+            hits.Add(new HitInfo(this, hit.collider, kill));
 
         }
 

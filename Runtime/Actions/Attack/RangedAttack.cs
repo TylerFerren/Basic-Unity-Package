@@ -8,6 +8,7 @@ using Unity.VisualScripting;
 using System.Linq;
 using UnityEditor;
 using Sirenix.Utilities;
+using UnityEngine.SocialPlatforms;
 
 namespace Codesign {
     public class RangedAttack : Attack
@@ -17,15 +18,18 @@ namespace Codesign {
 
         [Title("Ranged Settings")]
         [SerializeField] protected RangedType rangedType;
-        [SerializeField, ShowIf("rangedType", "RangedType.Projectile")] protected GameObject projectile;
+        [SerializeField, ShowIf("rangedType", RangedType.Projectile)] protected GameObject projectile;
+        [SerializeField, ShowIf("rangedType", RangedType.Projectile)] public bool poolProjectile;
+        [SerializeField, ShowIf("poolProjectile")] protected ObjectPooler pooler;
+        public ObjectPooler Pooler { get { return pooler; } }
 
         [SerializeField, Tooltip("the origin of the Ranged Attack")] protected Vector3 firePoint;
 
-        [SerializeField, FoldoutGroup("FireRate")] protected LevelingValue<float> fireRate;
+        [SerializeField, FoldoutGroup("FireRate")] protected LevelingValue<float> fireRate = 2;
         [SerializeField, FoldoutGroup("FireRate")] protected bool continuousFire;
 
         [SerializeField, ToggleGroup("useSpread")] protected bool useSpread;
-        [SerializeField, ToggleGroup("useSpread")] protected LevelingValue<float> spread;
+        [SerializeField, ToggleGroup("useSpread")] protected LevelingValue<float> spread = 1;
         [SerializeField, ToggleGroup("useSpread")] protected AnimationCurve spreadRate = new AnimationCurve();
 
         [SerializeField] protected OverheatSystem overheat = new OverheatSystem();
@@ -40,11 +44,19 @@ namespace Codesign {
         private Vector3 targetPosition;
         private Vector3 targetOffset;
 
+        private void OnValidate()
+        {
+            if (rangedType != RangedType.Projectile) poolProjectile = false;
+        }
+
         private void Awake()
         {
             if (targetingType != AttackTargetingType.AutomaticTargeting) cam = Camera.main;
             if (ammo.Enabled) onFire.AddListener(ammo.UseAmmo);
             if (overheat.Enabled) onFire.AddListener(() => StartCoroutine(overheat.HeatUp(overheat.heatBuildUp / fireRate)));
+            if (poolProjectile && pooler && pooler.ObjectsToPool.Find(n => n.objectToPool == projectile) == null) {
+                pooler.ObjectsToPool.Add(new ObjectPoolItem(projectile, 5, true, pooler));
+            }
         }
 
         public override IEnumerator Trigger()
@@ -89,17 +101,17 @@ namespace Codesign {
 
             yield return new WaitForSeconds(1 / fireRate);
 
-            if (IsActive && continuousFire && triggerType != ActionTriggerType.Automatic) StartCoroutine(Trigger());
+            if (IsActive && continuousFire ) yield return StartCoroutine(Trigger());
         }
 
-        public override IEnumerator Release()
+        public override IEnumerator Finish()
         {
             fireTimer = 0;
 
             if (overheat.Enabled && overheat.currentHeat > 0)
                 overheat.heatCooldown = StartCoroutine(overheat.HeatCooldown());
 
-            yield return StartCoroutine(base.Release());
+            yield return StartCoroutine(base.Finish());
         }
 
 
@@ -119,12 +131,10 @@ namespace Codesign {
                     attackHeightPlane.Raycast(cam.ScreenPointToRay(mousePosition), out float distance);
                     targetPosition = cam.ScreenToWorldPoint(new Vector3(mousePosition.x, mousePosition.y, distance));
                     targetPosition = Vector3.MoveTowards(transform.TransformPoint(firePoint), targetPosition, AttackRange);
-                    Debug.Log(targetPosition);
                     break;
                 case AttackTargetingType.AutomaticTargeting:
                     if(targetedObject) targetPosition = targetedObject.bounds.center;
                     break;
-
             }
             if(useSpread)
                 targetOffset = spread * spreadRate.Evaluate(fireTimer) * Random.insideUnitSphere;
@@ -134,22 +144,41 @@ namespace Codesign {
 
         public void LinecastShot() {
             Debug.DrawLine(origin, targetPosition, Color.HSVToRGB(Random.Range(0.01f, 0.99f), 1, 1), 2);
-            if (Physics.Linecast(origin, targetPosition, out RaycastHit hit, attackableLayers, QueryTriggerInteraction.Ignore))
+            var hits = Physics.RaycastAll(origin, targetPosition, AttackRange, attackableLayers, QueryTriggerInteraction.Ignore).ToList();
+            hits.RemoveAll(h => ActorColliers.Contains(h.collider));
+            var hit = hits.FirstOrDefault();
+            if (hit.collider != null)
             {
                 var health = hit.transform.gameObject.GetComponentInChildren<Health>();
-
-                Hit(hit.collider, health);
+                Hit(hit, health);
             }
         }
 
         public void ProjectileShot()
         {
-
+            GameObject bullet = null;
+            if (poolProjectile && pooler)
+            {
+                bullet = pooler.GetPooledObject(projectile);
+                bullet.transform.position = transform.TransformPoint(firePoint);
+                bullet.transform.LookAt(targetPosition);
+            }
+            if (bullet == null) {
+                if (poolProjectile) print("no pooled object availible");
+                bullet = Instantiate(projectile, transform.TransformPoint(firePoint), transform.rotation, null);
+                bullet.transform.LookAt(targetPosition);
+            }
+            if (bullet.TryGetComponent(out Projectile _projectile))
+                StartCoroutine(_projectile.Fire(targetPosition, this));
+            
+            else Debug.LogWarning("Projectile prefab must have Projectile componet on it.");
+            
         }
 
         private void OnDrawGizmosSelected()
         {
-            Gizmos.DrawSphere(transform.TransformPoint(firePoint), 0.1f);
+            Gizmos.color = new Color(1, 0.2f, 0.2f, 0.33f);
+            Gizmos.DrawSphere(transform.TransformPoint(firePoint), 0.05f);
             Handles.DrawWireDisc(transform.position, transform.up, AttackRange);
         }
 

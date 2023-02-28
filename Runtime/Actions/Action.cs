@@ -10,14 +10,14 @@ namespace Codesign {
     {
         public enum ActionTriggerType {UserInput, Automatic}
 
-        public bool IsActive { get; set; } = false;
-        public ActionManager Actor { get; set; }
-
         [Title("Action Settings")]
+        [field: SerializeField] public bool IsActive { get; set; } = false;
+        public List<Collider> ActorColliers;
+
         [SerializeField] protected ActionTriggerType triggerType = ActionTriggerType.UserInput;
         [SerializeField, ShowIf("triggerType", ActionTriggerType.UserInput)] protected InputActionReference inputRef;
-        protected Coroutine ActiveAutomaticCycle;
-        protected bool AutomaticIsActive = true;
+        public Coroutine ActiveAutomaticCycle;
+        public bool AutomaticIsActive = true;
 
         [SerializeField] protected CooldownSystem cooldown = new CooldownSystem();
         [SerializeField] protected ChargeSystem charge = new ChargeSystem();
@@ -28,9 +28,11 @@ namespace Codesign {
         [SerializeField, FoldoutGroup("Events")] protected UnityEvent OnTrigger;
         [SerializeField, FoldoutGroup("Events")] protected UnityEvent OnRelease;
 
+        public Coroutine activeAction;
 
         public virtual void OnEnable()
         {
+
             if (triggerType == ActionTriggerType.UserInput)
             {
                 if(!inputRef) return;
@@ -59,33 +61,50 @@ namespace Codesign {
         public IEnumerator AutomaticCycle() {
             while (triggerType == ActionTriggerType.Automatic) {
                 while (AutomaticIsActive) {
-                    yield return StartCoroutine(Trigger());
+                    yield return activeAction = StartCoroutine(Trigger());
                 }
-                yield return new WaitUntil(() => AutomaticIsActive);
+                yield return StartCoroutine(Release());
+                yield return new WaitUntil(() => AutomaticIsActive && activeAction == null);
             }
         }
 
+
         public void InputMethod(InputAction.CallbackContext context) {
-            if (context.performed) StartCoroutine(Trigger());
-            if (context.canceled) StartCoroutine(Release());
+            
+            if (context.performed && activeAction == null) {
+                activeAction = StartCoroutine(Trigger());
+            }
+            else if(context.canceled && IsActive) {
+                StartCoroutine(Release());
+            }
         }
 
         public virtual IEnumerator Trigger()
         {
+            if (cooldown.Enabled && cooldown.ActiveCooldown != null) yield break;
+
+            if (charge.Enabled ) {
+                if (charge.charageOnce && !IsActive || !charge.charageOnce) {
+                    IsActive = true;
+                    yield return StartCoroutine(charge.Charge());
+                }
+                
+                if (!IsActive) yield break;
+            }
             IsActive = true;
-            if (charge.Enabled && charge.charageOnce) {
-                yield return StartCoroutine(charge.Charge());
-            }
-
-            if (cooldown.Enabled && cooldown.ActiveCooldown != null) {
-                IsActive = false;
-                yield break;
-            }
-
         }
 
         public virtual IEnumerator Release()
         {
+            IsActive = false;
+            StartCoroutine(Finish());
+            yield return null;
+        }
+
+        public virtual IEnumerator Finish()
+        {
+            yield return activeAction;
+            activeAction = null;
             IsActive = false;
             yield return null;
         }

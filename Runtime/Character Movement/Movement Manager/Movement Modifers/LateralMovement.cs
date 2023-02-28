@@ -166,9 +166,13 @@ namespace Codesign
                 float rotSpeed = movementManager.IsGrounded ? rotationSpeed : airRotationSpeed;
 
                 // set target rotation toward move direction or camera forward
-                if (!targetLock) targetRotation = Mathf.Atan2(movementManager.RelativeInput.normalized.x, movementManager.RelativeInput.normalized.z) * Mathf.Rad2Deg;
-                else targetRotation = movementManager.cam.transform.eulerAngles.y;
-
+                if(targetLock)
+                    targetRotation = movementManager.cam.transform.eulerAngles.y;
+                else if(!OnlyRotateOnMove && movementManager.RelativeInput == Vector3.zero)
+                    targetRotation = movementManager.cam.transform.eulerAngles.y;
+                else
+                    targetRotation = Mathf.Atan2(movementManager.RelativeInput.normalized.x, movementManager.RelativeInput.normalized.z) * Mathf.Rad2Deg;
+            
                 //gets a angle to rotate the character toward the target rotation
                 float rotation = Mathf.MoveTowardsAngle(movementManager.controller.transform.eulerAngles.y, targetRotation, rotSpeed * Time.fixedDeltaTime);
 

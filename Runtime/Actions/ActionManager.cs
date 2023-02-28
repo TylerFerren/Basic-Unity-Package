@@ -31,6 +31,7 @@ namespace Codesign {
     public struct ActionInstance
     {
         public Action action;
+        public enum ActionTriggerType { UserInput, Automatic }
         public InputActionReference inputRef;
 
         public void EnableInstance()
@@ -48,6 +49,5 @@ namespace Codesign {
             inputRef.action.performed -= action.InputMethod;
             inputRef.action.canceled -= action.InputMethod;
         }
-
     }
 }
