@@ -19,7 +19,7 @@ namespace Codesign {
 
                 var ColliderHit = Physics.Linecast(previousLocation, transform.position, out RaycastHit hit, detectibleLayers, QueryTriggerInteraction.Ignore);
                 
-                if (ColliderHit && !action.ActorColliers.Contains(hit.collider)) {
+                if (ColliderHit) {
                     hit.collider.TryGetComponent(out Health health);
                     action.Hit(hit, health);
                     OnHit(action);
