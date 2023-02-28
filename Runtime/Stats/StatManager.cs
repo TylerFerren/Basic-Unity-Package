@@ -81,7 +81,6 @@ namespace Codesign
         {
             if (upgradePoints <= 0) return;
             stat.StatUpgrade();
-            upgradePoints--;
         }
 
         public void UpgradeStat(string category)

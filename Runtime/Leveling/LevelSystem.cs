@@ -29,6 +29,8 @@ namespace Codesign
 
         public void EarnExperience(int experience)
         {
+            if (CurrentLevel == MaxLevel) return;
+
             CurrentExperience += experience;
             while (CurrentExperience >= ExperienceToNextLevel)
             {

@@ -1,14 +1,9 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using Codice.Client.Common;
 using Sirenix.OdinInspector;
 using UnityEditor;
-using UnityEditor.Graphs;
 using UnityEngine;
 using UnityEngine.Events;
-using UnityEngine.UIElements;
-using System.Linq;
 
 namespace Codesign
 {
@@ -34,7 +29,6 @@ namespace Codesign
 
         public void StatUpgrade()
         {
-            if (manager.UpgradePoints <= 0) return;
             if (CurrentValue == MaxValue) return;
             CurrentValue++;
             manager.UpgradePoints--;
