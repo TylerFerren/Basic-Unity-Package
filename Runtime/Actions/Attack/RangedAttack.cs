@@ -63,21 +63,15 @@ namespace Codesign {
         {
             yield return StartCoroutine(base.Trigger());
 
-            if (triggerType == ActionTriggerType.Automatic && !AutomaticIsActive)
-            {
-                StartCoroutine(Release());
-                yield break;
-            }
-
             if (ammo.Enabled && ammo.currentAmmo <= 0)
             {
-                StartCoroutine(Release());
+                StartCoroutine(Finish());
                 yield break;
             }
 
             if (overheat.Enabled && overheat.isOverheated)
             {
-                StartCoroutine(Release());
+                StartCoroutine(Finish());
                 yield break;
             }
 

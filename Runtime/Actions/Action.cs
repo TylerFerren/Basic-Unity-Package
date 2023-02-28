@@ -11,12 +11,12 @@ namespace Codesign {
         public enum ActionTriggerType {UserInput, Automatic}
 
         [Title("Action Settings")]
-        [field: SerializeField] public bool IsActive { get; set; } = false;
+        public bool IsActive { get; set; } = false;
 
         [SerializeField] protected ActionTriggerType triggerType = ActionTriggerType.UserInput;
         [SerializeField, ShowIf("triggerType", ActionTriggerType.UserInput)] protected InputActionReference inputRef;
         public Coroutine ActiveAutomaticCycle;
-        public bool AutomaticIsActive = true;
+        [ReadOnly] public bool AutomaticIsActive = false;
 
         [SerializeField] protected CooldownSystem cooldown = new CooldownSystem();
         [SerializeField] protected ChargeSystem charge = new ChargeSystem();
@@ -31,7 +31,6 @@ namespace Codesign {
 
         public virtual void OnEnable()
         {
-
             if (triggerType == ActionTriggerType.UserInput)
             {
                 if(!inputRef) return;
@@ -62,11 +61,10 @@ namespace Codesign {
                 while (AutomaticIsActive) {
                     yield return activeAction = StartCoroutine(Trigger());
                 }
-                yield return StartCoroutine(Release());
+                if(activeAction != null) yield return StartCoroutine(Finish());
                 yield return new WaitUntil(() => AutomaticIsActive && activeAction == null);
             }
         }
-
 
         public void InputMethod(InputAction.CallbackContext context) {
             
