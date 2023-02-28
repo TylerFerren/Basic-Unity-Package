@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEditor;
 
 namespace Codesign {
-    [CustomPropertyDrawer(typeof(DynamicListAttribute))]
+    //[CustomPropertyDrawer(typeof(DynamicListAttribute))]
     public class DynamicListAttributeDrawer : PropertyDrawer
     {
         private SerializedProperty myListProp;

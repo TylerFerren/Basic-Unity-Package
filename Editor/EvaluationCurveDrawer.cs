@@ -10,7 +10,6 @@ using UnityEngine;
 
 namespace Codesign
 {
-
     [CustomPropertyDrawer(typeof(EvaluationCurve))]
     public class EvaluationCurveDrawer : PropertyDrawer
     {
