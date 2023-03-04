@@ -17,8 +17,10 @@ namespace Codesign
         public void OnValidate()
         {
             if (useStatusColor) {
-                StatusBar.fillRect.GetComponent<Image>().color = status.InspectorBarColor;
+                StatusBar.fillRect.TryGetComponent(out Image image);
+                if(image) image.color = status.InspectorBarColor;
             }
+            if (status) StatusBarUIUpdate(status);
         }
 
         public void Reset()
@@ -36,6 +38,8 @@ namespace Codesign
             }
 
             if (status == null) status = GetComponentInParent<Status>();
+
+            if (status) StatusBarUIUpdate(status);
         }
 
         private void OnEnable()
@@ -76,7 +80,6 @@ namespace Codesign
         {
             StatusBar.maxValue = status.MaxValue;
             StatusBar.value = status.CurrentValue;
-
         }
 
         public void BillboardUI()
