@@ -35,14 +35,20 @@ namespace Codesign
             if (currentValue == 0) currentValue = maxValue.Value;
             if (automaticRefill && currentValue < maxValue.Value) ActiveAdjustment = StartCoroutine(AdjustOverTime(refillRate, refillDelay));
             StatusUpdate.Invoke(this);
+            maxValue.OnValueUpdate.AddListener(delegate{ AdjustStatus(0);});
+        }
+
+        public void OnDisable()
+        {
+            maxValue.OnValueUpdate.RemoveListener(delegate { AdjustStatus(0);});
         }
 
         public void AdjustStatus(float value)
         {
             currentValue = Mathf.Clamp(currentValue + value, 0, maxValue.Value);
             StatusUpdate.Invoke(this);
-
             if (ActiveAdjustment != null) StopCoroutine(ActiveAdjustment);
+
             if (automaticRefill) ActiveAdjustment = StartCoroutine(AdjustOverTime(refillRate, refillDelay));
         }
 

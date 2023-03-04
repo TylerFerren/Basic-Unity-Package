@@ -52,17 +52,20 @@ namespace Codesign
         [SerializeField]
         public EvaluationCurve curve = new EvaluationCurve();
         [SerializeField] public int Category;
+        public UnityEvent OnValueUpdate;
 
         public void LevelUp()
         {
             Level++;
             Value = (T)(ValueType)curve.EvaluateInt(Level);
+            OnValueUpdate?.Invoke();
         }
 
         public void LevelUp(int level)
         {
             Level = level;
             Value = (T)(object)curve.Evaluate(Level);
+            OnValueUpdate?.Invoke();
         }
 
         public static void LevelUp(LevelingValue<T> levelingValue)
@@ -76,6 +79,7 @@ namespace Codesign
             {
                 levelingValue.Value = (T)(object)levelingValue.curve.EvaluateInt(levelingValue.Level);
             }
+            levelingValue.OnValueUpdate?.Invoke();
         }
 
         public void OnBeforeSerialize()
