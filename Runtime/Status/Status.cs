@@ -16,6 +16,7 @@ namespace Codesign
         [SerializeField] protected string StatusName = "New Status";
         [SerializeField, ProgressBar(0, "MaxValue", r: 1, g: 1, b: 1, Height = 20, ColorGetter = "inspectorBarColor"), HideLabel, HorizontalGroup("colorBar")] protected float currentValue;
         [SerializeField, HideLabel, HorizontalGroup("colorBar", Width = 80)] protected Color inspectorBarColor = new Color(0.8f, 0.8f, 0.8f, 1);
+        public Color InspectorBarColor { get{ return inspectorBarColor; } }
         public float CurrentValue { get => currentValue; set => currentValue = value; }
 
         public LevelingValue<float> maxValue = new LevelingValue<float>(100f, 100, 1.2f, 1.1f);

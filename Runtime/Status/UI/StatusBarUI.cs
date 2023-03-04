@@ -14,6 +14,12 @@ namespace Codesign
         [SerializeField] private bool useStatusColor;
         [SerializeField] private bool billboard = false;
 
+        public void OnValidate()
+        {
+            if (useStatusColor) {
+                StatusBar.fillRect.GetComponent<Image>().color = status.InspectorBarColor;
+            }
+        }
 
         public void Reset()
         {
