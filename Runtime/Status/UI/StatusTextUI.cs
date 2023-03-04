@@ -31,7 +31,7 @@ namespace Codesign
 
         public void StatusBarUIUpdate(Status status)
         {
-            statusText = status.CurrentValue.ToString() + "/" + status.MaxValue.ToString();
+            statusText = status.CurrentValue.ToString("F0") + "/" + status.MaxValue.ToString("F0");
             text.text = statusText;
         }
 
