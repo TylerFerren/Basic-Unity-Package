@@ -16,6 +16,7 @@ namespace Codesign
         private void OnValidate()
         {
             if (status) StatusBarUIUpdate(status);
+            if (text == null) text = GetComponent<TextMeshProUGUI>();
         }
 
         private void OnEnable()
