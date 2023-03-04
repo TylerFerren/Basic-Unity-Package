@@ -9,7 +9,7 @@ namespace Codesign
     [RequireComponent(typeof(Slider))]
     public class StatusBarUI : MonoBehaviour
     {
-        private Status status;
+        [SerializeField] private Status status;
         [SerializeField] private Slider StatusBar;
         [SerializeField] private bool useStatusColor;
         [SerializeField] private bool billboard = false;
