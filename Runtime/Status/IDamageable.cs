@@ -4,7 +4,9 @@ namespace Codesign
 {
     public interface IDamageable
     {
-        void Damage(float damage);
+
+        void Damage(float amount);
+        public bool IsAlive();
         float MaxValue { get; set; }
         float CurrentValue { get; set; }
 

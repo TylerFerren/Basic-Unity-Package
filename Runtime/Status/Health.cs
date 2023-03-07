@@ -8,7 +8,7 @@ namespace Codesign
     public class Health : Status, IDamageable
     {
         [field: SerializeField] public List<Collider> CriticalCollider { get; private set; } = new List<Collider>();
-
+        private bool isAlive = true;
         [FoldoutGroup("Event")] public UnityEvent OnBirth = new UnityEvent();
         [FoldoutGroup("Event")] public UnityEvent OnDeath = new UnityEvent();
 
@@ -25,15 +25,20 @@ namespace Codesign
             currentValue = MaxValue / 2;
         }
 
-        public void Damage(float damage)
+        public void Damage(float amount)
         {
-            AdjustStatus(-damage);
+            AdjustStatus(-amount);
 
             if (CurrentValue <= 0)
             {
+                isAlive = false;
                 OnDeath.Invoke();
             }
         }
 
+        public bool IsAlive()
+        {
+            return isAlive;
+        }
     }
 }
