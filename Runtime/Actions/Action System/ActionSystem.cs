@@ -6,7 +6,7 @@ using UnityEngine;
 namespace Codesign
 {
     [System.Serializable, Toggle("Enabled")]
-    public class ActionSystem
+    public Abstract class ActionSystem
     {
         public bool Enabled;
     }
