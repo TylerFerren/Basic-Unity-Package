@@ -49,27 +49,28 @@ namespace Codesign
             yield return StartCoroutine(base.Release());
         }
 
-        public virtual void Hit(RaycastHit hit, Health health)
+        public virtual void Hit(Collider hit)
         {
-            if (!health) return;
-            if (health.CriticalCollider.Contains(hit.collider))
+            var damageable =  hit.transform.gameObject.GetComponentInChildren<IDamageable>();
+            if (damageable == null) return;
+            if (damageable is Health health && health.CriticalCollider.Contains(hit))
             {
-                health.Damage(criticalDamage);
-                OnCriticalHit?.Invoke(hit.collider);
+               health.Damage(criticalDamage);
+                OnCriticalHit?.Invoke(hit);
             }
             else
             {
-                health.Damage(damage);
-                OnHit?.Invoke(hit.collider);
+                damageable.Damage(damage);
+                OnHit?.Invoke(hit);
             }
 
             bool kill = false;
-            if (health.CurrentValue <= 0)
+            if (damageable.CurrentValue <= 0)
             {
-                OnKill?.Invoke(hit.collider);
+                OnKill?.Invoke(hit);
                 kill = true;
             }
-            hits.Add(new HitInfo(this, hit.collider, kill));
+            hits.Add(new HitInfo(this, hit, kill));
 
         }
 

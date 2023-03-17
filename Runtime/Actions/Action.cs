@@ -8,7 +8,7 @@ using UnityEngine.Events;
 namespace Codesign {
     public abstract class Action : MonoBehaviour
     {
-        public enum ActionTriggerType {UserInput, Automatic}
+        public enum ActionTriggerType {UserInput, Automatic, ExternalTrigger}
 
         [Title("Action Settings")]
         public bool IsActive { get; set; } = false;
@@ -74,6 +74,14 @@ namespace Codesign {
             else if(context.canceled && IsActive) {
                 StartCoroutine(Release());
             }
+        }
+
+        public void TriggerAction() => StartCoroutine(FullTrigger());
+
+        public virtual IEnumerator FullTrigger() {
+            yield return StartCoroutine(Trigger());
+            yield return StartCoroutine(Release());
+            yield return StartCoroutine(Finish());
         }
 
         public virtual IEnumerator Trigger()

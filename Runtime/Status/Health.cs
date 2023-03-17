@@ -3,6 +3,7 @@ using Sirenix.OdinInspector;
 using UnityEngine.Events;
 using System.Collections.Generic;
 
+
 namespace Codesign
 {
     public class Health : Status, IDamageable
@@ -17,10 +18,9 @@ namespace Codesign
             base.OnEnable();
             OnBirth.Invoke();
         }
-
+        
         public void Reset()
         {
-            StatusName = "New Health";
             inspectorBarColor = new Color(0.5f, 0.9f, 0.6f, 1);
             currentValue = MaxValue / 2;
         }

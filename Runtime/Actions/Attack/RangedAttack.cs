@@ -141,8 +141,7 @@ namespace Codesign {
             
             if (Physics.Linecast(origin, targetPosition, out RaycastHit hit, attackableLayers, QueryTriggerInteraction.Ignore))
             {
-                var health = hit.transform.gameObject.GetComponentInChildren<Health>();
-                Hit(hit, health);
+                Hit(hit.collider);
             }
         }
 

@@ -48,10 +48,7 @@ namespace Codesign
                     if (!hits.Contains(collider) && !collider.transform.IsChildOf(transform))
                     {
                         hits.Add(collider);
-                        if (collider.TryGetComponent(out Health health))
-                        {
-                            health.Damage(damage);
-                        }
+                        Hit(collider);  
                     }
                 }
                 attackTimer += Time.deltaTime;

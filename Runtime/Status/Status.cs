@@ -13,7 +13,6 @@ namespace Codesign
 {
     public class Status : MonoBehaviour
     {
-        [SerializeField] protected string StatusName = "New Status";
         [SerializeField, ProgressBar(0, "MaxValue", r: 1, g: 1, b: 1, Height = 20, ColorGetter = "inspectorBarColor"), HideLabel, HorizontalGroup("colorBar")] protected float currentValue;
         [SerializeField, HideLabel, HorizontalGroup("colorBar", Width = 80)] protected Color inspectorBarColor = new Color(0.8f, 0.8f, 0.8f, 1);
         public Color InspectorBarColor { get{ return inspectorBarColor; } }
@@ -105,30 +104,30 @@ namespace Codesign
         }
 
 
-#if UNITY_EDITOR
+    #if UNITY_EDITOR
 
-    [SerializeField, HideInInspector] protected bool showGizmos;
-    [SerializeField, ShowIf("showGizmos")] private Vector3 gizmosOffset = new Vector3();
-    [SerializeField, ShowIf("showGizmos"), Range(5, 20)] private int gizmosSize = 7;
+        [SerializeField, HideInInspector] protected bool showGizmos;
+        [SerializeField, ShowIf("showGizmos"), FoldoutGroup("Gizmos Settings")] private Vector3 gizmosOffset = new Vector3();
+        [SerializeField, ShowIf("showGizmos"), FoldoutGroup("Gizmos Settings"), Range(5, 20)] private int gizmosSize = 7;
 
-    [ContextMenu("Show as Gizmos")]
-    private void SwitchShowGizmos()
-    {
-        showGizmos = !showGizmos;
-    }
-
-    public void OnDrawGizmos()
-    {
-        if (showGizmos)
+        [ContextMenu("Show as Gizmos")]
+        private void SwitchShowGizmos()
         {
-            Vector3 position = transform.position + gizmosOffset;
-
-            GUIContent content = new GUIContent(Mathf.Round(currentValue).ToString() + "/" + maxValue.Value.ToString() + " HP");
-            GUIStyle labelStyle = new GUIStyle() { alignment = TextAnchor.MiddleCenter, richText = false, fixedWidth = 120, fixedHeight = 30, fontSize = gizmosSize, fontStyle = FontStyle.Bold};
-            labelStyle.normal.textColor = inspectorBarColor;
-            Handles.Label(position, content, labelStyle);
+            showGizmos = !showGizmos;
         }
-    }
-#endif
+
+        public void OnDrawGizmos()
+        {
+            if (showGizmos)
+            {
+                Vector3 position = transform.position + gizmosOffset;
+
+                GUIContent content = new GUIContent(Mathf.Round(currentValue).ToString() + "/" + maxValue.Value.ToString() + " HP");
+                GUIStyle labelStyle = new GUIStyle() { alignment = TextAnchor.MiddleCenter, richText = false, fixedWidth = 120, fixedHeight = 30, fontSize = gizmosSize, fontStyle = FontStyle.Bold};
+                labelStyle.normal.textColor = inspectorBarColor;
+                Handles.Label(position, content, labelStyle);
+            }
+        }
+    #endif
     }
 }
