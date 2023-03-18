@@ -32,9 +32,8 @@ namespace Codesign
 
         public List<HitInfo> hits { get; private set;} = new List<HitInfo>();
 
-        public override void OnEnable()
+        public  void OnEnable()
         {
-            base.OnEnable();
             if(targetingType == AttackTargetingType.AutomaticTargeting)
                     StartCoroutine(AutomaticTargeting());
         }

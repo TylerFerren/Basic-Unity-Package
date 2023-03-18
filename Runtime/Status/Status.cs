@@ -21,9 +21,7 @@ namespace Codesign
         public LevelingValue<float> maxValue = new LevelingValue<float>(100f, 100, 1.2f, 1.1f);
         public float MaxValue { get => maxValue; set => maxValue = value; }
 
-        [SerializeField, ToggleGroup("automaticRefill")] private bool automaticRefill;
-        [SerializeField, ToggleGroup("automaticRefill")] private float refillRate = 3;
-        [SerializeField, ToggleGroup("automaticRefill")] private float refillDelay = 3;
+        [SerializeField] private AutomaticRefill _automaticRefill;
 
         [FoldoutGroup("Event")]
         public UnityEvent<Status> StatusUpdate = new UnityEvent<Status>();
@@ -33,7 +31,9 @@ namespace Codesign
         public void OnEnable()
         {
             if (currentValue == 0) currentValue = maxValue.Value;
-            if (automaticRefill && currentValue < maxValue.Value) ActiveAdjustment = StartCoroutine(AdjustOverTime(refillRate, refillDelay));
+
+            if (_automaticRefill.Enabled) ActiveAdjustment = StartCoroutine(_automaticRefill.Refill(this));
+
             StatusUpdate.Invoke(this);
             maxValue.OnValueUpdate.AddListener(delegate{ AdjustStatus(maxValue.Value - maxValue.curve.EvaluateInt(maxValue.Level-1));});
         }
@@ -48,8 +48,7 @@ namespace Codesign
             currentValue = Mathf.Clamp(currentValue + value, 0, maxValue.Value);
             StatusUpdate.Invoke(this);
             if (ActiveAdjustment != null) StopCoroutine(ActiveAdjustment);
-
-            if (automaticRefill) ActiveAdjustment = StartCoroutine(AdjustOverTime(refillRate, refillDelay));
+            if (_automaticRefill.Enabled) ActiveAdjustment = StartCoroutine(_automaticRefill.Refill(this));
         }
 
         private void SetMax(float value)
@@ -61,17 +60,6 @@ namespace Codesign
 
         public IEnumerator AdjustOverTime(float AdjustRate)
         {
-            while (currentValue < maxValue.Value)
-            {
-                currentValue = Mathf.Clamp(currentValue + AdjustRate * Time.deltaTime, 0, maxValue.Value);
-                StatusUpdate?.Invoke(this);
-                yield return null;
-            }
-        }
-
-        public IEnumerator AdjustOverTime(float AdjustRate, float delay)
-        {
-            yield return new WaitForSeconds(delay);
             while (currentValue < maxValue.Value)
             {
                 currentValue = Mathf.Clamp(currentValue + AdjustRate * Time.deltaTime, 0, maxValue.Value);

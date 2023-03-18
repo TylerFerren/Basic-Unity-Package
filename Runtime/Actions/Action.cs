@@ -8,13 +8,10 @@ using UnityEngine.Events;
 namespace Codesign {
     public abstract class Action : MonoBehaviour
     {
-        public enum ActionTriggerType {UserInput, Automatic, ExternalTrigger}
-
         [Title("Action Settings")]
         public bool IsActive { get; set; } = false;
 
-        [SerializeField] protected ActionTriggerType triggerType = ActionTriggerType.UserInput;
-        [SerializeField, ShowIf("triggerType", ActionTriggerType.UserInput)] protected InputActionReference inputRef;
+        
         public Coroutine ActiveAutomaticCycle;
         [ReadOnly] public bool AutomaticIsActive = false;
 
@@ -29,35 +26,8 @@ namespace Codesign {
 
         public Coroutine activeAction;
 
-        public virtual void OnEnable()
-        {
-            if (triggerType == ActionTriggerType.UserInput)
-            {
-                if(!inputRef) return;
-                inputRef.action.Enable();
-                inputRef.action.performed += InputMethod;
-                inputRef.action.canceled += InputMethod;
-            }
-            else if (triggerType == ActionTriggerType.Automatic)
-            {
-                ActiveAutomaticCycle = StartCoroutine(AutomaticCycle());
-            }
-        }
-
-        public virtual void OnDisable()
-        {
-            if (triggerType == ActionTriggerType.UserInput)
-            {
-                if (!inputRef) return;
-                inputRef.action.Disable();
-                inputRef.action.performed -= InputMethod;
-                inputRef.action.canceled -= InputMethod;
-            }
-            else if (ActiveAutomaticCycle != null) StopCoroutine(ActiveAutomaticCycle);
-        }
-
         public IEnumerator AutomaticCycle() {
-            while (triggerType == ActionTriggerType.Automatic) {
+            while (true) {
                 while (AutomaticIsActive) {
                     yield return activeAction = StartCoroutine(Trigger());
                 }
