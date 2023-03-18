@@ -166,7 +166,10 @@ namespace Codesign
         private void OnDrawGizmosSelected()
         {
             Gizmos.color = Color.green;
-            Gizmos.DrawRay(controller.transform.position, CameraRelativeInputCalc() * 1);
+            if (cam && controller)
+            { 
+                Gizmos.DrawRay(controller.transform.position, CameraRelativeInputCalc() * 1);
+            }
 
             var GizmosColor = IsGrounded ? Color.blue : Color.red;
 
