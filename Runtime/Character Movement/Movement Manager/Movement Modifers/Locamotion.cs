@@ -7,7 +7,7 @@ using Sirenix.OdinInspector;
 namespace Codesign
 {
     [RequireComponent(typeof(MovementManager))]
-    public class LateralMovement : MonoBehaviour, IMovementModifier
+    public class Locamotion : MonoBehaviour, IMovementModifier
     {
         #region IMovementModifer
         public Vector3 MovementVector { get; private set; }
@@ -28,30 +28,29 @@ namespace Codesign
 
         #region fields
         [SerializeField, Tooltip("Base Speed of standard movement")] private LevelingValue<float> standardSpeed = 5;
-        public void UpdateStadardSpeed() => standardSpeed.LevelUp();
         [SerializeField] private float acceleration = 5;
         [SerializeField] private float directionalAcceleration = 3;
         [SerializeField] private AnimationCurve offAngleSpeedReduction = AnimationCurve.Constant(0, 180, 1);
+
         [Header("Sprint")]
         [SerializeField, Tooltip("Top Speed of standard movement")] private LevelingValue<float> sprintSpeed = 9;
-        public void UpdateSprintSpeed() => sprintSpeed.LevelUp();
         [SerializeField] private bool sprintUsesStatus = false;
         [SerializeField, ShowIf("sprintUsesStatus")] private Status status;
         [SerializeField, ShowIf("sprintUsesStatus")] private LevelingValue<float> sprintStatusCost = 3;
-        public void UpdateSprintStatusCost() => sprintStatusCost.LevelUp();
+
         [Header("Rotation")]
-        [SerializeField] private bool targetLock = false;
-        [SerializeField] private bool OnlyRotateOnMove = false;
+        [SerializeField, Tooltip("Always rotates to face camera forward")] private bool targetLock = false;
+        [SerializeField, Tooltip("Only Rotates when while moving")] private bool OnlyRotateOnMove = false;
         [SerializeField, Range(0.0f, 720f),] private float rotationSpeed = 180f;
-        [SerializeField, Range(0.0f, 720f),] private float airRotationSpeed = 150f;
+
         [Header("Air")]
         [SerializeField, Tooltip("movement speed when not grounded")] private LevelingValue<float> airMoveSpeed = 3f;
-        public void UpdateAirMoveSpeed() => airMoveSpeed.LevelUp();
         [SerializeField, Tooltip("adjusts amount of momentum lost when airborn")] private float airResitance = 1f;
+        [SerializeField, Range(0.0f, 720f),] private float airRotationSpeed = 150f;
         #endregion
 
         #region modifiers
-        private bool sprinting { get; set; }
+        private bool sprinting;
         private float speedModifier = 1;
         public float SpeedModifier { get { return speedModifier; } set {speedModifier = value;} }
         #endregion
@@ -59,17 +58,17 @@ namespace Codesign
         #region outputs
         public Vector3 Direction { get; private set; }
         public Vector3 TargetDirection { get; private set; }
+        public float InputAngleChange { get; private set; }
         #endregion
 
         #region local
-        private float speed;
+        private float currentSpeed;
         private float targetSpeed;
         private float targetRotation;
-        private float inputAngleChange;
         #endregion
 
         #region events
-        private UnityEvent IsSprinting;
+        [SerializeField, FoldoutGroup("Events")] private UnityEvent IsSprinting;
         [SerializeField, FoldoutGroup("Events")] private UnityEvent<Vector3> IsMoving;
         #endregion
 
@@ -86,7 +85,7 @@ namespace Codesign
 
             IsMoving?.Invoke(MovementVector / Time.fixedDeltaTime);
 
-            RotationCalc();
+            if(!OnlyRotateOnMove || movementManager.InputDirection != Vector2.zero) RotationCalc();
 
             //Starts using Energy if target speed is close to sprint speed
             if (sprintUsesStatus && status != null && sprintSpeed - targetSpeed <= 1)
@@ -121,6 +120,7 @@ namespace Codesign
             if (movementManager.InputDirection == Vector2.zero) targetSpeed = 0;
             else if (movementManager.IsGrounded)
             {
+                //Checks if sprinting
                 if (sprinting)
                 {
                     //checks if sprint uses stanima and if character has enough stanima
@@ -132,7 +132,7 @@ namespace Codesign
             else
             {
                 //keeps momentum at the begining of a jump
-                targetSpeed = speed > airMoveSpeed ? Mathf.Lerp(speed, airMoveSpeed, Time.fixedDeltaTime * airResitance) : airMoveSpeed;
+                targetSpeed = currentSpeed > airMoveSpeed ? Mathf.Lerp(currentSpeed, airMoveSpeed, Time.fixedDeltaTime * airResitance) : airMoveSpeed;
             }
 
             //adjust speed by offAngleSpeedReduction - input direction vs facing direction
@@ -142,56 +142,43 @@ namespace Codesign
             targetSpeed *= SpeedModifier;
 
             //smooths speed towards target speed
-            if (speed < targetSpeed - 0.1f || speed > targetSpeed + 0.1f)
-                speed = Mathf.Lerp(speed, targetSpeed, Time.fixedDeltaTime * acceleration);
+            if (currentSpeed < targetSpeed - 0.1f || currentSpeed > targetSpeed + 0.1f)
+                currentSpeed = Mathf.Lerp(currentSpeed, targetSpeed, Time.fixedDeltaTime * acceleration);
             else
-                speed = targetSpeed;
+                currentSpeed = targetSpeed;
 
             //rounds to hundths place
-            speed = Mathf.Round(speed * 100f) / 100f;
+            currentSpeed = Mathf.Round(currentSpeed * 100f) / 100f;
 
-            return speed;
+            return currentSpeed;
         }
 
         private void RotationCalc()
         {
-            //chects if this only rotates on move and if there is any directional input currently happening 
-            if (OnlyRotateOnMove && movementManager.InputDirection == Vector2.zero)
-            {
-                inputAngleChange = Mathf.Abs(inputAngleChange) > 0.05 ? Mathf.LerpAngle(inputAngleChange, 0, Time.fixedDeltaTime) : 0;
-            }
+            //sets rotation speed based on if the character is grounded
+            float rotSpeed = movementManager.IsGrounded ? rotationSpeed : airRotationSpeed;
+
+            // set target rotation toward move direction or camera forward
+            if(targetLock || movementManager.InputDirection == Vector2.zero)
+                targetRotation = movementManager.cam.transform.eulerAngles.y;
             else
-            {
-                //sets rotation speed based on if the character is grounded
-                float rotSpeed = movementManager.IsGrounded ? rotationSpeed : airRotationSpeed;
-
-                // set target rotation toward move direction or camera forward
-                if(targetLock)
-                    targetRotation = movementManager.cam.transform.eulerAngles.y;
-                else if(!OnlyRotateOnMove && movementManager.RelativeInput == Vector3.zero)
-                    targetRotation = movementManager.cam.transform.eulerAngles.y;
-                else
-                    targetRotation = Mathf.Atan2(movementManager.RelativeInput.normalized.x, movementManager.RelativeInput.normalized.z) * Mathf.Rad2Deg;
+                targetRotation = Mathf.Atan2(movementManager.RelativeInput.normalized.x, movementManager.RelativeInput.normalized.z) * Mathf.Rad2Deg;
             
-                //gets a angle to rotate the character toward the target rotation
-                float rotation = Mathf.MoveTowardsAngle(movementManager.controller.transform.eulerAngles.y, targetRotation, rotSpeed * Time.fixedDeltaTime);
+            //gets a angle to rotate the character toward the target rotation
+            float rotation = Mathf.MoveTowardsAngle(movementManager.controller.transform.eulerAngles.y, targetRotation, rotSpeed * Time.fixedDeltaTime);
 
-                // rotate to face input direction relative to camera position
-                movementManager.controller.transform.rotation = Quaternion.Lerp(movementManager.controller.transform.rotation, Quaternion.Euler(0.0f, rotation, 0.0f), rotSpeed * Time.fixedDeltaTime);
+            // rotate to face input direction relative to camera position
+            movementManager.controller.transform.rotation = Quaternion.Lerp(movementManager.controller.transform.rotation, Quaternion.Euler(0.0f, rotation, 0.0f), rotSpeed * Time.fixedDeltaTime);
 
-                //angle between current heading and input heading
-                inputAngleChange = Vector3.SignedAngle(movementManager.controller.transform.forward, movementManager.InputDirection, Vector3.up) / 90;
-            }
+            //angle between current heading and input heading
+            InputAngleChange = Vector3.SignedAngle(movementManager.controller.transform.forward, movementManager.InputDirection, Vector3.up) / 90;
         }
 
         public void OnSprint(InputAction.CallbackContext context)
         {
-            sprinting = context.performed;
-        }
+            if (sprintUsesStatus && status.CurrentValue <= 0) return;
 
-        private void OnDrawGizmosSelected()
-        {
-            //Gizmos.DrawRay(transform.position, TargetDirection);
+            sprinting = context.performed;
         }
     }
 }

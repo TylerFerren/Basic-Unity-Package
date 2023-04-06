@@ -48,7 +48,7 @@ namespace Codesign
         private void Awake()
         {
             if (!movementManager) movementManager = GetComponent<MovementManager>();
-            if (TryGetComponent(out Gravity _gravity)) gravity = _gravity.GravityVector;
+            gravity = movementManager.Gravity;
         }
 
         private void FixedUpdate()
@@ -77,10 +77,8 @@ namespace Codesign
         
             MovementVector = Vector3.Lerp(MovementVector, wallMovementSpeed * Time.fixedDeltaTime * moveCalc, Time.fixedDeltaTime * 3);
             if (MovementVector.magnitude / Time.fixedDeltaTime < 0.01f) MovementVector = Vector3.zero;
-
-            //if (stickingToWall) print(MovementVector.magnitude / Time.fixedDeltaTime + " Vs " + movementManager.Momentum.magnitude);
-            //else Debug.Log("<color=red>" + MovementVector.magnitude / Time.fixedDeltaTime + " Vs " + movementManager.Momentum.magnitude + "</color>");
         }
+
         private Vector3 WallRunCalc()
         {
             Vector3 inputDir = movementManager.RelativeInputCalc();

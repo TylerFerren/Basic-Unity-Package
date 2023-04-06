@@ -58,10 +58,7 @@ namespace Codesign
         {
             movementManager = GetComponent<MovementManager>();
 
-            if (TryGetComponent(out Gravity _gravity))
-            {
-                gravity = _gravity.GravityVector;
-            }
+            gravity = movementManager.Gravity; 
 
             if (jumpInput)
             {
@@ -95,6 +92,7 @@ namespace Codesign
                     jumpingFloor = movementManager.controller.transform.position.y;
                     LastJumpHieght = 0;
                 }
+
                 isJumping = true;
                 jumped?.Invoke();
                 currentJumpCount++;
@@ -136,6 +134,13 @@ namespace Codesign
         public void ResetJump()
         {
             currentJumpCount = 0;
+        }
+
+        public void OnDrawGizmosSelected()
+        {
+            Gizmos.color = Color.yellow;
+            if(movementManager)
+                Gizmos.DrawRay(transform.position, Vector3.Lerp(Vector3.Lerp(Vector3.up, movementManager.ContactNormal, contactNormalInfluence), movementManager.RelativeInput, inputInfluence).normalized);
         }
     }
 }

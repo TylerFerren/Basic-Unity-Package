@@ -1,19 +1,13 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using Sirenix.OdinInspector;
 using UnityEngine.Events;
-using Unity.VisualScripting;
-using System.Linq;
 using UnityEditor;
-using Sirenix.Utilities;
-using UnityEngine.SocialPlatforms;
 
 namespace Codesign {
     public class RangedAttack : Attack
     {
-        
         protected enum RangedType {Raycast, Projectile}
 
         [Title("Ranged Settings")]
@@ -161,14 +155,13 @@ namespace Codesign {
             }
             if (bullet.TryGetComponent(out Projectile _projectile))
                 StartCoroutine(_projectile.Fire(targetPosition, this));
-            
             else Debug.LogWarning("Projectile prefab must have Projectile componet on it.");
             
         }
 
         private void OnDrawGizmosSelected()
         {
-            Gizmos.color = new Color(1, 0.2f, 0.2f, 0.33f);
+            Gizmos.color = new Color(1, 0.2f, 0.2f, 0.5f);
             Gizmos.DrawSphere(transform.TransformPoint(firePoint), 0.05f);
             Handles.DrawWireDisc(transform.position, transform.up, AttackRange);
         }

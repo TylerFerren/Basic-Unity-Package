@@ -7,9 +7,8 @@ using UnityEngine.Events;
 namespace Codesign
 {
     [System.Serializable, Toggle("Enabled")]
-    public class ChargeSystem
+    public class ChargeSystem : ActionSystem
     {
-        public bool Enabled;
         [field: SerializeField] public float chargeRate { get; private set; }
         [field: SerializeField] public bool charageOnce { get; private set; }
         private float chargeTimer;

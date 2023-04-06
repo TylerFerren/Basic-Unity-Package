@@ -16,7 +16,7 @@ namespace Codesign {
             yield return new WaitForSeconds(refillDelay);
             while (status.CurrentValue < status.MaxValue)
             {
-                status.AdjustStatus(refillRate * Time.deltaTime);
+                status.Refill(refillRate * Time.fixedDeltaTime);
                 yield return null;
             }
         }

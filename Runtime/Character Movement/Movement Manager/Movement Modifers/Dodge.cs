@@ -1,6 +1,8 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using Sirenix.OdinInspector;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.Interactions;
 
@@ -39,6 +41,9 @@ namespace Codesign
 
         private float timer;
         private Vector3 smoothVector;
+
+        [SerializeField, FoldoutGroup("Events")] private UnityEvent dodged;
+
 
         void Awake()
         {
@@ -85,13 +90,13 @@ namespace Codesign
                 if (movementManager.RelativeInput != Vector3.zero) dodgeVector = DodgeVectorCalc();
                 yield return new WaitForFixedUpdate();
             }
-            //yield return new WaitForSeconds(dodgeDelay);
-
             movementManager.PauseMovement = false;
 
             timer = 0;
 
             var dodgeTime = dodgeDistance / dodgeSpeed;
+
+            dodged?.Invoke();
 
             while (timer < 1)
             {

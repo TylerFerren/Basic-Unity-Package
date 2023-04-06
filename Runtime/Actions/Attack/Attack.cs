@@ -23,6 +23,7 @@ namespace Codesign
         [SerializeField] protected LevelingValue<float> AttackRange = 3;
 
         [SerializeField] protected AttackTargetingType targetingType = AttackTargetingType.First_ThirdPerson;
+        [SerializeField, ShowIf("targetingType", AttackTargetingType.AutomaticTargeting)] AutomaticTargeting autoTargeting;
 
         [ReadOnly] public Collider targetedObject;
 
@@ -32,15 +33,11 @@ namespace Codesign
 
         public List<HitInfo> hits { get; private set;} = new List<HitInfo>();
 
-        public  void OnEnable()
-        {
-            if(targetingType == AttackTargetingType.AutomaticTargeting)
-                    StartCoroutine(AutomaticTargeting());
-        }
 
         public override IEnumerator Trigger()
         {
             yield return StartCoroutine(base.Trigger());
+            if (autoTargeting) targetedObject = autoTargeting.TargetedObject;
         }
 
         public override IEnumerator Release()
@@ -71,34 +68,6 @@ namespace Codesign
             }
             hits.Add(new HitInfo(this, hit, kill));
 
-        }
-
-        protected IEnumerator AutomaticTargeting()
-        {
-            //Searches for a list of targets every fixed update
-            while (targetingType == AttackTargetingType.AutomaticTargeting)
-            {
-                var targetOptions = Physics.OverlapSphere(transform.position, AttackRange, attackableLayers);
-
-                targetOptions.Sort((a, b) =>
-                {
-                    float distA = Vector3.Distance(transform.position, a.transform.position);
-                    float distB = Vector3.Distance(transform.position, b.transform.position);
-                    return distA.CompareTo(distB);
-                });
-
-                if (targetOptions.FirstOrDefault())
-                {
-                    AutomaticIsActive = true;
-                    targetedObject = targetOptions.FirstOrDefault();
-                }
-                else if (AutomaticIsActive)
-                {
-                    IsActive = false;
-                    AutomaticIsActive = false;
-                }
-                yield return new WaitForFixedUpdate();
-            }
         }
     }
 }

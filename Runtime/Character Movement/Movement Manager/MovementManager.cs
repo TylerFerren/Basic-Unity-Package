@@ -42,6 +42,10 @@ namespace Codesign
         public Collider CurrentGround { get; set; }
         public Vector3 ContactNormal { get; set; } = Vector3.up;
 
+        [ToggleGroup("useGravity"), SerializeField] private bool useGravity;
+        [ToggleGroup("useGravity"), SerializeField] private Vector3 gravity = Physics.gravity;
+        public Vector3 Gravity { get { return gravity; } }
+
         [SerializeField] private bool LockCursor;
 
         private float timeTillLand;
@@ -81,9 +85,17 @@ namespace Codesign
                     movement += movementModifier.MovementVector;
                 }
             }
+
+            if (useGravity) {
+                var fallingMomentum = new Vector3(0, Mathf.Clamp(controller.velocity.y * Time.fixedDeltaTime, Mathf.NegativeInfinity, 0), 0);
+
+                movement += IsGrounded ? fallingMomentum : fallingMomentum + (gravity * Time.fixedDeltaTime * Time.fixedDeltaTime) ;
+            }
+
+
             if (physicisBased)
             {
-                rigidBody.AddForce(movement);
+                rigidBody.AddForce(movement, ForceMode.Impulse);
             }
             else
             {
@@ -110,10 +122,10 @@ namespace Codesign
             return RelativeInput = Quaternion.Euler(cam.transform.eulerAngles.x, cam.transform.eulerAngles.y, cam.transform.eulerAngles.z) * new Vector3(InputDirection.x, 0, InputDirection.y);
         }
 
-        private Collider[] groundCheckCollider;
         //checks if the controller is within a short distance of anything in the ground layers
         public bool GroundedCheck()
         {
+            Collider [] groundCheckCollider;
             var position = controller.transform.position;
             var spherePosition = new Vector3(position.x, position.y - ((controller.height / 2) - controller.radius) - groundedOffset, position.z);
 
@@ -141,7 +153,7 @@ namespace Codesign
         }
 
         public void ContactNormalCheck(Vector3 contactPoint) {
-            if (Physics.Raycast(controller.transform.position, contactPoint - transform.position, out RaycastHit hit))
+            if (Physics.Raycast(controller.transform.position, Vector3.down, out RaycastHit hit, 3))
             {
                 ContactNormal = hit.normal;
             }

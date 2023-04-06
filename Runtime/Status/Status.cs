@@ -91,6 +91,11 @@ namespace Codesign
             return values;
         }
 
+        public void Refill(float value) {
+            currentValue = Mathf.Clamp(currentValue + value, 0, maxValue.Value);
+            StatusUpdate.Invoke(this);
+        }
+
 
     #if UNITY_EDITOR
 

@@ -4,7 +4,6 @@ using UnityEngine;
 
 namespace Codesign
 {
-
     public interface IMovementModifier
     {
         Vector3 MovementVector { get; }
