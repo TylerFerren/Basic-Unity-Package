@@ -18,13 +18,13 @@ namespace Codesign {
         public ObjectPooler Pooler { get { return pooler; } }
 
         [SerializeField, Tooltip("the origin of the Ranged Attack")] protected Vector3 firePoint;
+        public Vector3 FirePoint { get { return firePoint; } }
 
         [SerializeField, FoldoutGroup("FireRate")] protected LevelingValue<float> fireRate = 2;
         [SerializeField, FoldoutGroup("FireRate")] protected bool continuousFire;
 
-        [SerializeField, ToggleGroup("useSpread")] protected bool useSpread;
-        [SerializeField, ToggleGroup("useSpread")] protected LevelingValue<float> spread = 1;
-        [SerializeField, ToggleGroup("useSpread")] protected AnimationCurve spreadRate = new AnimationCurve();
+
+        [SerializeField] protected SpreadSystem spread = new SpreadSystem();
 
         [SerializeField] protected OverheatSystem overheat = new OverheatSystem();
 
@@ -32,11 +32,13 @@ namespace Codesign {
 
         [SerializeField, FoldoutGroup("Events")] protected UnityEvent onFire;
 
-        private float fireTimer;
+        private float spreadTime;
+        private float lastFireTime;
         private Camera cam;
         private Vector3 origin;
         private Vector3 targetPosition;
         private Vector3 targetOffset;
+        public Vector3 FireDestination { get; private set; }
 
         private void OnValidate()
         {
@@ -85,7 +87,8 @@ namespace Codesign {
 
             onFire?.Invoke();
 
-            fireTimer += 1 / fireRate;
+            if (Time.time - lastFireTime < spread.SpreadTime) spreadTime = (Time.time - lastFireTime) / spread.SpreadTime;
+            spreadTime += 1/ fireRate;
 
             yield return new WaitForSeconds(1 / fireRate);
 
@@ -94,7 +97,8 @@ namespace Codesign {
 
         public override IEnumerator Finish()
         {
-            fireTimer = 0;
+            spreadTime = 0;
+            lastFireTime = Time.time;
 
             if (overheat.Enabled && overheat.currentHeat > 0)
                 overheat.heatCooldown = StartCoroutine(overheat.HeatCooldown());
@@ -121,22 +125,24 @@ namespace Codesign {
                     targetPosition = Vector3.MoveTowards(transform.TransformPoint(firePoint), targetPosition, AttackRange);
                     break;
                 case AttackTargetingType.AutomaticTargeting:
-                    if(targetedObject) targetPosition = targetedObject.bounds.center;
+                    if(TargetedObject) targetPosition = TargetedObject.bounds.center;
                     break;
             }
-            if(useSpread)
-                targetOffset = spread * spreadRate.Evaluate(fireTimer) * Random.insideUnitSphere;
+            if(spread.Enabled)
+                targetOffset = spread.SpreadCalc(spreadTime);
 
             targetPosition += targetOffset;
         }
 
         public void LinecastShot() {
             Debug.DrawLine(origin, targetPosition, Color.HSVToRGB(Random.Range(0.01f, 0.99f), 1, 1), 2);
-            
+
             if (Physics.Linecast(origin, targetPosition, out RaycastHit hit, attackableLayers, QueryTriggerInteraction.Ignore))
             {
                 Hit(hit.collider);
+                FireDestination = hit.point;
             }
+            else FireDestination = targetPosition;
         }
 
         public void ProjectileShot()

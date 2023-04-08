@@ -25,7 +25,7 @@ namespace Codesign
         [SerializeField] protected AttackTargetingType targetingType = AttackTargetingType.First_ThirdPerson;
         [SerializeField, ShowIf("targetingType", AttackTargetingType.AutomaticTargeting)] AutomaticTargeting autoTargeting;
 
-        [ReadOnly] public Collider targetedObject;
+        public Collider TargetedObject { get; set; }
 
         [SerializeField, FoldoutGroup("Events")] protected UnityEvent<Collider> OnHit;
         [SerializeField, FoldoutGroup("Events")] protected UnityEvent<Collider> OnCriticalHit;
@@ -37,7 +37,7 @@ namespace Codesign
         public override IEnumerator Trigger()
         {
             yield return StartCoroutine(base.Trigger());
-            if (autoTargeting) targetedObject = autoTargeting.TargetedObject;
+            if (autoTargeting) TargetedObject = autoTargeting.TargetedObject;
         }
 
         public override IEnumerator Release()
@@ -49,10 +49,12 @@ namespace Codesign
         {
             var damageable =  hit.transform.gameObject.GetComponentInChildren<IDamageable>();
             if (damageable == null) return;
+            bool critical = false;
             if (damageable is Health health && health.CriticalCollider.Contains(hit))
             {
                health.Damage(criticalDamage);
                 OnCriticalHit?.Invoke(hit);
+                critical = true;
             }
             else
             {
@@ -66,7 +68,7 @@ namespace Codesign
                 OnKill?.Invoke(hit);
                 kill = true;
             }
-            hits.Add(new HitInfo(this, hit, kill));
+            hits.Add(new HitInfo(this, hit, critical, kill));
 
         }
     }
