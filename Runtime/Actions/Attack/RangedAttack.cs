@@ -59,7 +59,7 @@ namespace Codesign {
         {
             yield return StartCoroutine(base.Trigger());
 
-            if (ammo.Enabled && ammo.currentAmmo <= 0)
+            if ((ammo.Enabled && ammo.useMagazine && ammo.MagazineAmount <= 0) || (ammo.Enabled && ammo.currentAmmo <= 0))
             {
                 StartCoroutine(Finish());
                 yield break;

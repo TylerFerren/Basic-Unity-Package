@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
@@ -13,7 +14,7 @@ namespace Codesign
         [field: SerializeField] public bool useMagazine { get; set; }
         [field: SerializeField, ShowIf("useMagazine")] public int MagazineAmount { get; set; }
         [field: SerializeField, ShowIf("useMagazine")] public int magazineCapacity { get; set; } = 25;
-        //[field: SerializeField, ShowIf("useMagazine")] public int reloadTime { get; set; } = 1;
+        [field: SerializeField, ShowIf("useMagazine")] public int reloadTime { get; set; } = 1;
 
         public AmmoSystem()
         {
@@ -25,7 +26,7 @@ namespace Codesign
             if (useMagazine)
             {
                 MagazineAmount--;
-                if (MagazineAmount <= 0) Reload();
+                if (MagazineAmount <= 0) Task.Run(Reload);
             }
             else
                 currentAmmo--;
@@ -36,8 +37,9 @@ namespace Codesign
             currentAmmo = Mathf.Clamp(currentAmmo + amount, 0, maxAmmo);
         }
 
-        public void Reload()
+        public async void Reload()
         {
+            await Task.Delay(reloadTime * 1000);
             if (currentAmmo >= magazineCapacity)
             {
                 var reloadAmount = magazineCapacity - MagazineAmount;
