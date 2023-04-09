@@ -13,7 +13,7 @@ namespace Codesign
         [field: SerializeField] public bool useMagazine { get; set; }
         [field: SerializeField, ShowIf("useMagazine")] public int MagazineAmount { get; set; }
         [field: SerializeField, ShowIf("useMagazine")] public int magazineCapacity { get; set; } = 25;
-        [field: SerializeField, ShowIf("useMagazine")] public int reloadTime { get; set; } = 1;
+        //[field: SerializeField, ShowIf("useMagazine")] public int reloadTime { get; set; } = 1;
 
         public AmmoSystem()
         {
