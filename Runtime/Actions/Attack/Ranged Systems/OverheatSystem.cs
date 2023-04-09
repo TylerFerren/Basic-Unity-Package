@@ -37,6 +37,8 @@ namespace Codesign
                 isOverheated = true;
             }
 
+            yield return new WaitForSeconds(HeatCooldownDelay);
+
             while (currentHeat > 0)
             {
                 if (currentHeat < cooledDownLimit) isOverheated = false;
