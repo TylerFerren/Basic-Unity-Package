@@ -10,7 +10,7 @@ namespace Codesign
         [SerializeField] private Animator anim;
 
         private Coroutine aimingCoroutine;
-        public void OnMove(Vector3 velocity)
+        public void AnimMove(Vector3 velocity)
         {
             var locVel = transform.InverseTransformDirection(velocity);
 
@@ -21,22 +21,22 @@ namespace Codesign
             anim.SetFloat("MovementZ", locVel.z);
         }
 
-        public void OnJump()
+        public void AnimJump()
         {
             anim.SetTrigger("Jump");
         }
 
-        public void OnGrouned(bool isGrouned)
+        public void AnimGrouned(bool isGrouned)
         {
             anim.SetBool("Grounded", isGrouned);
         }
 
-        public void OnTimeToLand(float time)
+        public void AnimTimeToLand(float time)
         {
             anim.SetFloat("LandTime", time);
         }
 
-        public void OnAim(bool aim)
+        public void AnimAim(bool aim)
         {
             anim.SetBool("Aiming", aim);
             if (aimingCoroutine != null) StopCoroutine(aimingCoroutine);
