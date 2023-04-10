@@ -171,7 +171,7 @@ namespace Codesign
             }
         }
 
-        public void MoveInput(InputAction.CallbackContext context) {
+        public void OnMove(InputAction.CallbackContext context) {
             InputDirection = context.ReadValue<Vector2>();
         }
 
