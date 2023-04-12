@@ -13,9 +13,12 @@ namespace Codesign
         public override void Awake()
         {
             base.Awake();
-            foreach (SpawnItem spawnItem in SpawnInfo.itemsToSpawn)
-            {
-                objectPooler.ObjectsToPool.Add(new ObjectPoolItem(spawnItem.objectToSpawn, 5, true, objectPooler));
+            if (useObjectPool)
+            { 
+                foreach (SpawnItem spawnItem in SpawnInfo.itemsToSpawn)
+                {
+                    objectPooler.ObjectsToPool.Add(new ObjectPoolItem(spawnItem.objectToSpawn, 5, true, objectPooler));
+                }
             }
         }
 

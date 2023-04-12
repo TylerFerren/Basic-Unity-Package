@@ -23,7 +23,7 @@ namespace Codesign
         [SerializeField] protected LevelingValue<float> AttackRange = 3;
 
         [SerializeField] protected AttackTargetingType targetingType = AttackTargetingType.First_ThirdPerson;
-        [SerializeField, ShowIf("targetingType", AttackTargetingType.AutomaticTargeting)] AutomaticTargeting autoTargeting;
+        [SerializeField, ShowIf("targetingType", AttackTargetingType.AutomaticTargeting)] protected AutomaticTargeting autoTargeting;
 
         public Collider TargetedObject { get; set; }
 
@@ -33,6 +33,13 @@ namespace Codesign
 
         public List<HitInfo> hits { get; private set;} = new List<HitInfo>();
 
+        public void Awake()
+        {
+            if (targetingType == AttackTargetingType.AutomaticTargeting && autoTargeting == null)
+            {
+                autoTargeting = GetComponent<AutomaticTargeting>();
+            }
+        }
 
         public override IEnumerator Trigger()
         {

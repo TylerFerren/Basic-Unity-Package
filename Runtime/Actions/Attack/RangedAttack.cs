@@ -53,6 +53,7 @@ namespace Codesign {
             if (poolProjectile && pooler && pooler.ObjectsToPool.Find(n => n.objectToPool == projectile) == null) {
                 pooler.ObjectsToPool.Add(new ObjectPoolItem(projectile, 5, true, pooler));
             }
+            
         }
 
         public override IEnumerator Trigger()
