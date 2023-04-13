@@ -13,7 +13,7 @@ namespace Codesign {
         [SerializeField] private Bounds spawnArea;
         [SerializeField, Tooltip("Max number of objects that can be actively spawned in the scene at one time.")] protected int maxSpawnAmount = 5;
         [SerializeField] private bool spawnWithParentTransform;
-        [SerializeField] private bool useObjectPool;
+        [SerializeField] protected bool useObjectPool;
         [SerializeField, ShowIf("useObjectPool")] protected ObjectPooler objectPooler;
 
         
