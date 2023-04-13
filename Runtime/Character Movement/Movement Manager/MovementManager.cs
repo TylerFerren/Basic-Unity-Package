@@ -181,15 +181,14 @@ namespace Codesign
             if (cam && controller)
             { 
                 Gizmos.DrawRay(controller.transform.position, CameraRelativeInputCalc() * 1);
+
+                var GizmosColor = IsGrounded ? Color.blue : Color.red;
+
+                Gizmos.color = GizmosColor;
+                var position = controller.transform.position;
+                var spherePosition = new Vector3(position.x, position.y - ((controller.height / 2) - controller.radius) - groundedOffset, position.z);
+                Gizmos.DrawWireSphere(spherePosition, controller.radius + groundedRadius);
             }
-
-            var GizmosColor = IsGrounded ? Color.blue : Color.red;
-
-            Gizmos.color = GizmosColor;
-            var position = controller.transform.position;
-            var spherePosition = new Vector3(position.x, position.y - ((controller.height / 2) - controller.radius) - groundedOffset, position.z);
-            Gizmos.DrawWireSphere(spherePosition, controller.radius + groundedRadius);
-
         }
     }
 }

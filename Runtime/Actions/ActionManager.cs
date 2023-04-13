@@ -72,6 +72,9 @@ namespace Codesign {
 
         }
 
+        public void SetInstanceAction(Action _action) {
+            action = _action;
+        }
 
     }
 }

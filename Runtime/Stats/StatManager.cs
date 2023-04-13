@@ -4,6 +4,7 @@ using Sirenix.OdinInspector;
 using UnityEngine;
 using System;
 using System.Reflection;
+using Unity.Mathematics;
 
 namespace Codesign
 {
@@ -16,11 +17,13 @@ namespace Codesign
         [Space]
         [ShowInInspector] public static string[] StatCategories = new string[7]{"None", "Health", "Strength", "Speed", "Stanima", "Agility", "Dexterity" };
 
-        [SerializeField, HideInInspector] public LevelingValueRefrencs levelingValues = new LevelingValueRefrencs();
+        //[SerializeField, HideInInspector] public LevelingValueRefrencs levelingValues = new LevelingValueRefrencs();
+
+        private Component[] _components;
 
         public void FindLevelingValues()
         {
-            levelingValues = new LevelingValueRefrencs();
+            //levelingValues = new LevelingValueRefrencs();
             foreach (Stat stat in Stats) {
                 stat.levelingValues = new List<LevelingValue<float>>();
             }
@@ -31,31 +34,38 @@ namespace Codesign
             else
                 components = transform.GetComponentsInChildren(typeof(MonoBehaviour), true);
 
+            //if there are no new components, return this function
+            if (components.SequenceEqual(_components)) return;
+
             foreach (var component in components) {
                 FieldInfo[] fields = component.GetType().GetFields(BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public);
                 foreach (FieldInfo field in fields)
                 {
+                    //Debug.Log(component.name + "." + field.Name);
+
                     if (field.FieldType == typeof(LevelingValue<float>))
                     {
                         var levelingValue = field.GetValue(component) as LevelingValue<float>;
                         var stat = Stats.Find(n => n.Category == levelingValue.Category);
-                        if(stat != null && !stat.levelingValues.Contains(levelingValue)) stat.levelingValues.Add(levelingValue);
+                        if (stat != null && !stat.levelingValues.Contains(levelingValue)) stat.levelingValues.Add(levelingValue);
                     }
+                    else {
+                        #region subFields
+                        //FieldInfo[] subfields = field.FieldType.GetFields(BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public);
+                        //foreach (FieldInfo subfield in subfields) {
+                        //    if (subfield.FieldType == typeof(LevelingValue<float>))
+                        //    {
+                        //        Debug.Log(field.GetValue(component) as LevelingValue<float>);
 
-                    #region subFields
-                    //FieldInfo[] subfields = field.FieldType.GetFields(BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public);
-                    //foreach (FieldInfo subfield in subfields) {
-                    //    if (subfield.FieldType == typeof(LevelingValue<float>))
-                    //    {
-                    //        Debug.Log(field.GetValue(component) as LevelingValue<float>);
-
-                    //        var levelingValue = subfield.GetValue(field.GetValue(component)) as LevelingValue<float>;
-                    //        levelingValue.statManager = this;
-                    //    }
-                    //}
-                    #endregion
+                        //        var levelingValue = subfield.GetValue(field.GetValue(component)) as LevelingValue<float>;
+                        //        levelingValue.statManager = this;
+                        //    }
+                        //}
+                        #endregion
+                    }
                 }
             }
+            _components = components;
         }
 
         private void OnValidate()

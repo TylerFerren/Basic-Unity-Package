@@ -30,7 +30,10 @@ namespace Codesign {
 
         [SerializeField] protected AmmoSystem ammo = new AmmoSystem();
 
+        [SerializeField] protected RecoilSystem recoil = new RecoilSystem();
+
         [SerializeField, FoldoutGroup("Events")] protected UnityEvent onFire;
+        [SerializeField, FoldoutGroup("Events")] protected UnityEvent<Vector3, Vector3> onFirePositions;
 
         private float spreadTime;
         private float lastFireTime;
@@ -50,6 +53,8 @@ namespace Codesign {
             if (targetingType != AttackTargetingType.AutomaticTargeting) cam = Camera.main;
             if (ammo.Enabled) onFire.AddListener(ammo.UseAmmo);
             if (overheat.Enabled) onFire.AddListener(() => StartCoroutine(overheat.HeatUp(overheat.heatBuildUp / fireRate)));
+            if (recoil.Enabled) onFire.AddListener(recoil.Recoil);
+
             if (poolProjectile && pooler && pooler.ObjectsToPool.Find(n => n.objectToPool == projectile) == null) {
                 pooler.ObjectsToPool.Add(new ObjectPoolItem(projectile, 5, true, pooler));
             }
@@ -86,6 +91,7 @@ namespace Codesign {
             }
 
             onFire?.Invoke();
+            onFirePositions?.Invoke(transform.TransformPoint(firePoint), targetPosition);
 
             if (Time.time - lastFireTime < spread.SpreadTime) spreadTime = (Time.time - lastFireTime) / spread.SpreadTime;
             spreadTime += 1/ fireRate;

@@ -765,8 +765,8 @@ MonoBehaviour:
   - m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 161266682353516349}
-        m_TargetAssemblyTypeName: MovementManager, Assembly-CSharp
-        m_MethodName: MoveInput
+        m_TargetAssemblyTypeName: Codesign.MovementManager, codesign.basic-unity-package.runtime
+        m_MethodName: OnMove
         m_Mode: 0
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -1897,8 +1897,8 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 161266681652888871}
-        m_TargetAssemblyTypeName: AnimationParameters, Assembly-CSharp
-        m_MethodName: OnGrouned
+        m_TargetAssemblyTypeName: Codesign.AnimationParameters, codesign.basic-unity-package.runtime
+        m_MethodName: AnimGrouned
         m_Mode: 0
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -1912,8 +1912,8 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 161266681652888871}
-        m_TargetAssemblyTypeName: AnimationParameters, Assembly-CSharp
-        m_MethodName: OnTimeToLand
+        m_TargetAssemblyTypeName: Codesign.AnimationParameters, codesign.basic-unity-package.runtime
+        m_MethodName: AnimTimeToLand
         m_Mode: 0
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -2028,7 +2028,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 161266681652888871}
         m_TargetAssemblyTypeName: Codesign.AnimationParameters, codesign.basic-unity-package.runtime
-        m_MethodName: OnMove
+        m_MethodName: AnimMove
         m_Mode: 0
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -2086,7 +2086,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 161266681652888871}
         m_TargetAssemblyTypeName: Codesign.AnimationParameters, codesign.basic-unity-package.runtime
-        m_MethodName: OnJump
+        m_MethodName: AnimJump
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}

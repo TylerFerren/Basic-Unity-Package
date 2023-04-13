@@ -5,7 +5,6 @@ using UnityEngine;
 namespace Codesign {
     public class ShotRayRender : MonoBehaviour
     {
-        [SerializeField] private RangedAttack attack;
         [SerializeField] private LineRenderer line;
 
         [SerializeField] private float displayTime;
@@ -13,16 +12,15 @@ namespace Codesign {
         // Start is called before the first frame update
         void Start()
         {
-            if (!attack) attack = gameObject.GetComponent<RangedAttack>();
             if (!line) line = gameObject.GetComponent<LineRenderer>();
             line.enabled = false;
         }
 
-        public void  ShootRay() {
-            if (attack == null || line == null) return;
+        public void  ShootRay(Vector3 start, Vector3 end) {
+            if (line == null) return;
 
-            line.SetPosition(0, transform.TransformPoint(attack.FirePoint));
-            line.SetPosition(1, attack.FireDestination);
+            line.SetPosition(0, start);
+            line.SetPosition(1, end);
 
             StartCoroutine(ShowRay());
 
