@@ -85,11 +85,7 @@ namespace Codesign
 
         private void OnDrawGizmosSelected()
         {
-            if (boostDestination != null)
-            {
-                Gizmos.DrawCube(boostDestination, Vector3.one * 0.5f);
-
-            }
+           
         }
 
     }

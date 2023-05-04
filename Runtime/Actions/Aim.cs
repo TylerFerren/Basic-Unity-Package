@@ -1,14 +1,14 @@
 using System.Collections;
 using System.Collections.Generic;
 using Cinemachine;
+using Sirenix.OdinInspector;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.InputSystem;
 
 namespace Codesign
 {
-
-    public class AimSystem : MonoBehaviour
+    public class Aim : Action
     {
         [SerializeField] private CinemachineVirtualCamera virtualCamera;
         [SerializeField] private float AimFieldOfView = 40;
@@ -18,7 +18,7 @@ namespace Codesign
 
         public bool Aiming { get; private set; }
 
-        public UnityEvent<bool> IsAiming;
+        [SerializeField, FoldoutGroup("Events"), PropertyOrder(99)] private UnityEvent<bool> IsAiming;
 
         private float FOVBase;
 
@@ -30,6 +30,40 @@ namespace Codesign
         {
             Aiming = context.performed;
             IsAiming?.Invoke(Aiming);
+        }
+
+        public override IEnumerator Trigger()
+        {
+            yield return base.Trigger();
+
+            Aiming = true;
+            //IsAiming?.Invoke(Aiming);
+            //if (virtualCamera == null) yield return null;
+            //while (IsActive && Mathf.Abs(virtualCamera.m_Lens.FieldOfView - AimFieldOfView) > 0.1) {
+            //    virtualCamera.m_Lens.FieldOfView = Mathf.Lerp(virtualCamera.m_Lens.FieldOfView, AimFieldOfView, Time.fixedDeltaTime / AimTransitionSpeed);
+            //    yield return null;
+            //}
+            //Aiming = true;
+            //cinemachinePOV.m_HorizontalAxis.m_MaxSpeed = horizontalSpeedBase * AimSpeedRatio;
+            //cinemachinePOV.m_VerticalAxis.m_MaxSpeed = verticalSpeedBase * AimSpeedRatio;
+
+        }
+
+        public override IEnumerator Release()
+        {
+            Aiming = false;
+            //return base.Release();
+            //if (virtualCamera == null) yield return null;
+            //while (Mathf.Abs(virtualCamera.m_Lens.FieldOfView - FOVBase) > 0.1)
+            //{
+            //    virtualCamera.m_Lens.FieldOfView = Mathf.Lerp(virtualCamera.m_Lens.FieldOfView, FOVBase, Time.fixedDeltaTime / AimTransitionSpeed);
+            //    yield return null;
+            //}
+            //Aiming = false;
+            //cinemachinePOV.m_HorizontalAxis.m_MaxSpeed = horizontalSpeedBase * AimSpeedRatio;
+            //cinemachinePOV.m_VerticalAxis.m_MaxSpeed = verticalSpeedBase * AimSpeedRatio;
+
+            yield return base.Release();
         }
 
         public void Start()
@@ -59,6 +93,8 @@ namespace Codesign
                 cinemachinePOV.m_HorizontalAxis.m_MaxSpeed = horizontalSpeedBase;
                 cinemachinePOV.m_VerticalAxis.m_MaxSpeed = verticalSpeedBase;
             }
+
+            IsAiming?.Invoke(Aiming);
         }
 
     }

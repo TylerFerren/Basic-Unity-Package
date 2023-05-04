@@ -6,16 +6,14 @@ using UnityEngine;
 
 namespace Codesign
 {
-    //[CustomPropertyDrawer(typeof(Stat))]
+    [CustomPropertyDrawer(typeof(Stat))]
     public class StatDrawer : PropertyDrawer
     {
         private bool show;
 
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
         {
-
             EditorGUI.BeginProperty(position, label, property);
-
             position.width -= 72;
 
             int index = property.FindPropertyRelative("category").intValue;
@@ -30,27 +28,31 @@ namespace Codesign
 
             Rect MaxRect = new Rect(SlashRect.x + SlashRect.width + 2, position.y, 30, EditorGUIUtility.singleLineHeight);
             EditorGUI.PropertyField(MaxRect, property.FindPropertyRelative("maxValue"), GUIContent.none);
-
+            
             // Get the list of custom objects from the serialized property
-            SerializedProperty customObjects = property.FindPropertyRelative("levelingValues");
+            SerializedProperty levelingValues = property.FindPropertyRelative("levelingValues");
 
             position.y += EditorGUIUtility.singleLineHeight + EditorGUIUtility.standardVerticalSpacing;
             position.height += EditorGUIUtility.singleLineHeight + EditorGUIUtility.standardVerticalSpacing;
+
+            SerializedProperty Values = property.FindPropertyRelative("values");
+
             // Draw the list using a for loop
-            for (int i = 0; i < customObjects.arraySize; i++)
+            for (int i = 0; i < levelingValues.arraySize; i++)
             {
-                SerializedProperty customObject = customObjects.GetArrayElementAtIndex(i);
-
+                SerializedProperty levelingValue = levelingValues.GetArrayElementAtIndex(i);
+                
                 // Create a label for this element based on its name property
-
+                var valueLabel = new GUIContent("Value");
+                Debug.Log(valueLabel);
                 // Draw the element using the custom property drawer for the custom class
-                EditorGUI.PropertyField(position, customObject);
+                EditorGUI.PropertyField(position, levelingValue, valueLabel);
 
                 // Move the position down for the next element
-                position.y += EditorGUI.GetPropertyHeight(customObject, true) + EditorGUIUtility.standardVerticalSpacing;
-                position.height += EditorGUI.GetPropertyHeight(customObject, true) + EditorGUIUtility.standardVerticalSpacing;
+                position.y += EditorGUI.GetPropertyHeight(levelingValue, true) + EditorGUIUtility.standardVerticalSpacing;
+                position.height += EditorGUI.GetPropertyHeight(levelingValue, true) + EditorGUIUtility.standardVerticalSpacing;
             }
-            
+
             EditorGUI.EndProperty();
             ////if (label.text == "") label.text = property.displayName;
             //var labelPosition = new Rect(position.x, position.y, EditorGUIUtility.labelWidth, EditorGUIUtility.singleLineHeight);
@@ -74,5 +76,13 @@ namespace Codesign
             //}
 
         }
+
+        public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
+        {
+
+            int lineCount = 1 + property.FindPropertyRelative("levelingValues").arraySize;
+            return EditorGUIUtility.singleLineHeight * lineCount + EditorGUIUtility.standardVerticalSpacing * (lineCount - 1);
+        }
+
     }
 }

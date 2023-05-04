@@ -19,7 +19,7 @@ namespace Codesign
 
         //[SerializeField, HideInInspector] public LevelingValueRefrencs levelingValues = new LevelingValueRefrencs();
 
-        private Component[] _components;
+        private Component[] _components = new Component[0];
 
         public void FindLevelingValues()
         {
@@ -27,6 +27,7 @@ namespace Codesign
             foreach (Stat stat in Stats) {
                 stat.levelingValues = new List<LevelingValue<float>>();
             }
+
             Component[] components;
 
             if(transform.root != transform)
@@ -35,19 +36,20 @@ namespace Codesign
                 components = transform.GetComponentsInChildren(typeof(MonoBehaviour), true);
 
             //if there are no new components, return this function
-            if (components.SequenceEqual(_components)) return;
+            //if (components.SequenceEqual(_components)) return;
+
 
             foreach (var component in components) {
                 FieldInfo[] fields = component.GetType().GetFields(BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public);
                 foreach (FieldInfo field in fields)
                 {
-                    //Debug.Log(component.name + "." + field.Name);
-
                     if (field.FieldType == typeof(LevelingValue<float>))
                     {
                         var levelingValue = field.GetValue(component) as LevelingValue<float>;
                         var stat = Stats.Find(n => n.Category == levelingValue.Category);
-                        if (stat != null && !stat.levelingValues.Contains(levelingValue)) stat.levelingValues.Add(levelingValue);
+                        if (stat != null && !stat.levelingValues.Contains(levelingValue)) {
+                            stat.levelingValues.Add(levelingValue);
+                        }
                     }
                     else {
                         #region subFields

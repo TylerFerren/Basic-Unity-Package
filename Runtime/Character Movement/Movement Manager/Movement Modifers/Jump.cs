@@ -27,11 +27,10 @@ namespace Codesign
         private MovementManager movementManager = null;
 
         [SerializeField] private LevelingValue<float> jumpHeight = new LevelingValue<float>(3f);
-        public void UpdateJumpHeight() => jumpHeight.LevelUp();
 
         [SerializeField] private LevelingValue<int> jumpCount = new LevelingValue<int>(1);
-        public void UpdateJumpCount() => jumpCount.LevelUp();
 
+        [SerializeField] private float cyoteTime = 0.2f;
 
         [SerializeField, Range(1f, 10f)] private float shortJumpMultipler = 2;
 
@@ -71,7 +70,7 @@ namespace Codesign
         {
             if (MovementPaused) return;
 
-            if (movementManager.IsGrounded && !isJumping)
+            if ((movementManager.IsGrounded || movementManager.TimeSinceGrounded < cyoteTime) && !isJumping)
             {
                 jumpVector = Vector3.Lerp(jumpVector, Vector3.zero, Time.deltaTime * 5);
             }
@@ -138,9 +137,9 @@ namespace Codesign
 
         public void OnDrawGizmosSelected()
         {
-            Gizmos.color = Color.yellow;
-            if(movementManager)
-                Gizmos.DrawRay(transform.position, Vector3.Lerp(Vector3.Lerp(Vector3.up, movementManager.ContactNormal, contactNormalInfluence), movementManager.RelativeInput, inputInfluence).normalized);
+            //Gizmos.color = Color.yellow;
+            //if(movementManager)
+            //    Gizmos.DrawRay(transform.position, Vector3.Lerp(Vector3.Lerp(Vector3.up, movementManager.ContactNormal, contactNormalInfluence), movementManager.RelativeInput, inputInfluence).normalized);
         }
     }
 }

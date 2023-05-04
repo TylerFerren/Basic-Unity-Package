@@ -17,11 +17,11 @@ namespace Codesign {
         [SerializeField, ShowIf("poolProjectile")] protected ObjectPooler pooler;
         public ObjectPooler Pooler { get { return pooler; } }
 
-        [SerializeField, Tooltip("the origin of the Ranged Attack")] protected Vector3 firePoint;
+        [SerializeField, Tooltip("The Origin of the Ranged Attack")] protected Vector3 firePoint;
         public Vector3 FirePoint { get { return firePoint; } }
 
-        [SerializeField, FoldoutGroup("FireRate")] protected LevelingValue<float> fireRate = 2;
-        [SerializeField, FoldoutGroup("FireRate")] protected bool continuousFire;
+        [SerializeField, FoldoutGroup("Fire Rate")] protected LevelingValue<float> fireRate = 2;
+        [SerializeField, FoldoutGroup("Fire Rate")] protected bool continuousFire;
 
 
         [SerializeField] protected SpreadSystem spread = new SpreadSystem();
@@ -32,8 +32,8 @@ namespace Codesign {
 
         [SerializeField] protected RecoilSystem recoil = new RecoilSystem();
 
-        [SerializeField, FoldoutGroup("Events")] protected UnityEvent onFire;
-        [SerializeField, FoldoutGroup("Events")] protected UnityEvent<Vector3, Vector3> onFirePositions;
+        [SerializeField, FoldoutGroup("Events"), PropertyOrder(99)] protected UnityEvent onFire;
+        [SerializeField, FoldoutGroup("Events"), PropertyOrder(99)] protected UnityEvent<Vector3, Vector3> onFirePositions;
 
         private float spreadTime;
         private float lastFireTime;
@@ -48,8 +48,9 @@ namespace Codesign {
             if (rangedType != RangedType.Projectile) poolProjectile = false;
         }
 
-        private void Awake()
+        public override void Awake()
         {
+            base.Awake();
             if (targetingType != AttackTargetingType.AutomaticTargeting) cam = Camera.main;
             if (ammo.Enabled) onFire.AddListener(ammo.UseAmmo);
             if (overheat.Enabled) onFire.AddListener(() => StartCoroutine(overheat.HeatUp(overheat.heatBuildUp / fireRate)));
@@ -58,7 +59,6 @@ namespace Codesign {
             if (poolProjectile && pooler && pooler.ObjectsToPool.Find(n => n.objectToPool == projectile) == null) {
                 pooler.ObjectsToPool.Add(new ObjectPoolItem(projectile, 5, true, pooler));
             }
-            
         }
 
         public override IEnumerator Trigger()
@@ -118,7 +118,7 @@ namespace Codesign {
             origin = transform.TransformPoint(firePoint);
 
             switch (targetingType) {
-                case AttackTargetingType.First_ThirdPerson:
+                case AttackTargetingType.Perspective:
                     if (Physics.Raycast(cam.transform.position, cam.transform.forward, out RaycastHit hit, AttackRange, attackableLayers, QueryTriggerInteraction.Ignore))
                         targetPosition = hit.point;
                     else

@@ -31,6 +31,7 @@ namespace Codesign
         [SerializeField] private float acceleration = 5;
         [SerializeField] private float directionalAcceleration = 3;
         [SerializeField] private AnimationCurve offAngleSpeedReduction = AnimationCurve.Constant(0, 180, 1);
+        [SerializeField] private AnimationCurve slopeSpeedReduction = AnimationCurve.Constant(0, 180, 1);
 
         [Header("Sprint")]
         [SerializeField, Tooltip("Top Speed of standard movement")] private LevelingValue<float> sprintSpeed = 9;
@@ -40,7 +41,8 @@ namespace Codesign
 
         [Header("Rotation")]
         [SerializeField, Tooltip("Always rotates to face camera forward")] private bool targetLock = false;
-        [SerializeField, Tooltip("Only Rotates when while moving")] private bool OnlyRotateOnMove = false;
+        [SerializeField, Tooltip("Only Rotates when while moving")] private bool onlyRotateOnMove = false;
+        public bool OnlyRotateOnMove { get { return onlyRotateOnMove; } set { onlyRotateOnMove = value;} }
         [SerializeField, Range(0.0f, 720f),] private float rotationSpeed = 180f;
 
         [Header("Air")]
@@ -85,7 +87,7 @@ namespace Codesign
 
             IsMoving?.Invoke(MovementVector / Time.fixedDeltaTime);
 
-            if(!OnlyRotateOnMove || movementManager.InputDirection != Vector2.zero) RotationCalc();
+            if(!onlyRotateOnMove || movementManager.InputDirection != Vector2.zero) RotationCalc();
 
             //Starts using Energy if target speed is close to sprint speed
             if (sprintUsesStatus && status != null && sprintSpeed - targetSpeed <= 1)
@@ -98,9 +100,9 @@ namespace Codesign
         {
             var relativeInput = movementManager.RelativeInput;
 
-            if (movementManager.IsGrounded && Physics.SphereCast(gameObject.transform.position + Vector3.up * 0.5f, 0.5f, Vector3.down, out RaycastHit hit, 3))
+            if (movementManager.IsGrounded)
             {
-                var groundRelativeDir = Vector3.ProjectOnPlane(relativeInput, hit.normal).normalized;
+                var groundRelativeDir = Vector3.ProjectOnPlane(relativeInput, movementManager.ContactNormal).normalized;
                 TargetDirection = Vector3.Distance(TargetDirection, groundRelativeDir) > 0.01f ? Vector3.Lerp(TargetDirection, groundRelativeDir, Time.fixedDeltaTime * directionalAcceleration) : groundRelativeDir;
             }
             else
@@ -138,6 +140,10 @@ namespace Codesign
             //adjust speed by offAngleSpeedReduction - input direction vs facing direction
             var relativeFacingAngle = Vector3.SignedAngle(transform.forward, Direction, Vector3.up);
             targetSpeed *= offAngleSpeedReduction.Evaluate(relativeFacingAngle);
+
+            //Debug.Log(Vector3.SignedAngle(movementManager.ContactNormal, Vector3.up, Vector3.right));
+            targetSpeed *= slopeSpeedReduction.Evaluate(Vector3.SignedAngle(movementManager.ContactNormal, Vector3.up, Vector3.right));
+
 
             targetSpeed *= SpeedModifier;
 

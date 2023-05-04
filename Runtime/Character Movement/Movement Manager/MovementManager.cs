@@ -48,7 +48,8 @@ namespace Codesign
 
         [SerializeField] private bool LockCursor;
 
-        private float timeTillLand;
+        public float TimeTillLand { get; private set; } = 0;
+        public float TimeSinceGrounded { get; private set; } = 0;
 
         [FoldoutGroup("Events"), SerializeField] private UnityEvent<bool> grounded;
         [FoldoutGroup("Events"), SerializeField] private UnityEvent<float> landTime;
@@ -69,12 +70,12 @@ namespace Codesign
         public void FixedUpdate()
         {
             RelativeInputCalc();
+            GroundedCheck();
             Movement();
         }
 
         private void Movement()
         {
-            GroundedCheck();
             Vector3 movement = Vector3.zero;
 
             if (PauseMovement) {
@@ -88,8 +89,8 @@ namespace Codesign
 
             if (useGravity) {
                 var fallingMomentum = new Vector3(0, Mathf.Clamp(controller.velocity.y * Time.fixedDeltaTime, Mathf.NegativeInfinity, 0), 0);
-
-                movement += IsGrounded ? fallingMomentum : fallingMomentum + (gravity * Time.fixedDeltaTime * Time.fixedDeltaTime) ;
+                fallingMomentum += Time.fixedDeltaTime * Time.fixedDeltaTime * gravity;
+                movement += IsGrounded ? fallingMomentum : fallingMomentum + (Time.fixedDeltaTime * Time.fixedDeltaTime * gravity) ;
             }
 
 
@@ -138,36 +139,50 @@ namespace Codesign
             {
                 if (!collider.transform.IsChildOf(controller.transform))
                 {
+                    
                     ContactNormalCheck(collider.ClosestPointOnBounds(transform.position));
                     CurrentGround = collider;
-                    timeTillLand = 0;
+                    TimeTillLand = 0;
+                    TimeSinceGrounded = 0;
                     if (!IsGrounded) grounded?.Invoke(true);
                     return IsGrounded = true;
                 }
             }
+
+            TimeSinceGrounded += Time.fixedDeltaTime;
+
+            if (TimeSinceGrounded < Time.fixedDeltaTime * 5) {
+                if (!IsGrounded) grounded?.Invoke(true);
+                return IsGrounded = true;
+            }
+
             ContactNormal = Vector3.up;
             CurrentGround = null;
-            TimeTillLand();
+
+            TimeTillLandCheck();
             if (IsGrounded) grounded?.Invoke(false);
             return IsGrounded = false;
         }
 
         public void ContactNormalCheck(Vector3 contactPoint) {
-            if (Physics.Raycast(controller.transform.position, Vector3.down, out RaycastHit hit, 3))
+            var position = controller.transform.position;
+            var direction = contactPoint - new Vector3(position.x, position.y - ((controller.height / 2) - controller.radius) - groundedOffset, position.z);
+            if (Physics.Raycast(controller.transform.position, direction, out RaycastHit hit, 3))
             {
+                Debug.DrawLine(hit.point, hit.point + hit.normal, Color.green);
                 ContactNormal = hit.normal;
             }
         }
 
-        public void TimeTillLand() {
+        public void TimeTillLandCheck() {
             if (Physics.Raycast(controller.transform.position, Vector3.down, out RaycastHit hitInfo, 2000)) {
                 float groundDistance = hitInfo.distance;
                 if (controller.velocity.y < 0)
-                    timeTillLand = groundDistance / -controller.velocity.y;
+                    TimeTillLand = groundDistance / -controller.velocity.y;
                 else
-                    timeTillLand = 100;
+                    TimeTillLand = 100;
 
-                landTime?.Invoke(timeTillLand);
+                landTime?.Invoke(TimeTillLand);
             }
         }
 

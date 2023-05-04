@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Runtime.Serialization;
 using Sirenix.OdinInspector;
 using UnityEditor;
 using UnityEngine;
@@ -22,7 +23,6 @@ namespace Codesign
         public int MaxValue { get { return maxValue; } set { maxValue = value; } }
 
         [ShowInInspector] public List<LevelingValue<float>> levelingValues = new List<LevelingValue<float>>();
-
 
         [FoldoutGroup("Event")]
         public UnityEvent<int> OnStatUpdate;

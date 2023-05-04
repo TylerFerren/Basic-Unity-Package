@@ -9,9 +9,9 @@ using Sirenix.Utilities;
 
 namespace Codesign
 {
-    public abstract class Attack : Action
+    public abstract class Attack : Ability
     {
-        protected enum AttackTargetingType { First_ThirdPerson, MousePosition, AutomaticTargeting, None }
+        protected enum AttackTargetingType { Perspective, MousePosition, AutomaticTargeting, None }
 
         [Title("Attack Settings")]
         [SerializeField] protected LayerMask attackableLayers;
@@ -22,18 +22,18 @@ namespace Codesign
 
         [SerializeField] protected LevelingValue<float> AttackRange = 3;
 
-        [SerializeField] protected AttackTargetingType targetingType = AttackTargetingType.First_ThirdPerson;
+        [SerializeField] protected AttackTargetingType targetingType = AttackTargetingType.Perspective;
         [SerializeField, ShowIf("targetingType", AttackTargetingType.AutomaticTargeting)] protected AutomaticTargeting autoTargeting;
 
         public Collider TargetedObject { get; set; }
 
-        [SerializeField, FoldoutGroup("Events")] protected UnityEvent<Collider> OnHit;
-        [SerializeField, FoldoutGroup("Events")] protected UnityEvent<Collider> OnCriticalHit;
-        [SerializeField, FoldoutGroup("Events")] protected UnityEvent<Collider> OnKill;
+        [SerializeField, FoldoutGroup("Events"), PropertyOrder(99)] protected UnityEvent<Collider> OnHit;
+        [SerializeField, FoldoutGroup("Events"), PropertyOrder(99)] protected UnityEvent<Collider> OnCriticalHit;
+        [SerializeField, FoldoutGroup("Events"), PropertyOrder(99)] protected UnityEvent<Collider> OnKill;
 
         public List<HitInfo> hits { get; private set;} = new List<HitInfo>();
 
-        public void Awake()
+        public virtual void Awake()
         {
             if (targetingType == AttackTargetingType.AutomaticTargeting && autoTargeting == null)
             {
