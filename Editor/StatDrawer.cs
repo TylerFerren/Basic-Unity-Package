@@ -44,7 +44,6 @@ namespace Codesign
                 
                 // Create a label for this element based on its name property
                 var valueLabel = new GUIContent("Value");
-                Debug.Log(valueLabel);
                 // Draw the element using the custom property drawer for the custom class
                 EditorGUI.PropertyField(position, levelingValue, valueLabel);
 

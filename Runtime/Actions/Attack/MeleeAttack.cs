@@ -6,7 +6,6 @@ using UnityEngine.InputSystem;
 
 namespace Codesign
 {
-    [RequireComponent(typeof(Collider))]
     public class MeleeAttack : Attack
     {
         [SerializeField] private Collider hitBox;
@@ -42,7 +41,7 @@ namespace Codesign
             attackTimer = 0;
             while (attackTimer < attackDuration)
             {
-                var framehitBoxes = Physics.OverlapSphere(hitBox.bounds.center, hitBox.bounds.extents.magnitude);
+                var framehitBoxes = Physics.OverlapBox(hitBox.bounds.center, hitBox.bounds.extents);
                 foreach (Collider collider in framehitBoxes)
                 {
                     if (!hits.Contains(collider) && !collider.transform.IsChildOf(transform))
@@ -57,6 +56,13 @@ namespace Codesign
 
             yield return new WaitForSeconds(attackDuration);
             hitBox.enabled = false;
+        }
+
+        public void OnDrawGizmosSelected()
+        {
+            
+                Gizmos.DrawWireCube(hitBox.bounds.center, hitBox.bounds.extents);
+            
         }
     }
 

@@ -38,8 +38,9 @@ namespace Codesign
             //if there are no new components, return this function
             //if (components.SequenceEqual(_components)) return;
 
-
+            if (components.Length == 0) return;
             foreach (var component in components) {
+                if (component == null) return;
                 FieldInfo[] fields = component.GetType().GetFields(BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public);
                 foreach (FieldInfo field in fields)
                 {

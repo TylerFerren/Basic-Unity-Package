@@ -29,7 +29,16 @@ namespace Codesign
 
                 if (!IsActive) yield break;
             }
-            IsActive = true;
+            else IsActive = true;
+
+            yield return base.Trigger();
+        }
+
+
+        public override IEnumerator Finish()
+        {
+            if (cooldown.Enabled && cooldown.ActiveCooldown != null) cooldown.ActiveCooldown = StartCoroutine(cooldown.Cooldown());
+            return base.Finish();
         }
     }
 

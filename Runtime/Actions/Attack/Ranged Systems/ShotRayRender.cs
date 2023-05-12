@@ -16,7 +16,7 @@ namespace Codesign {
             line.enabled = false;
         }
 
-        public void  ShootRay(Vector3 start, Vector3 end) {
+        public void ShootRay(Vector3 start, Vector3 end) {
             if (line == null) return;
 
             line.SetPosition(0, start);

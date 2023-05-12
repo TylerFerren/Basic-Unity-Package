@@ -9,8 +9,10 @@ namespace Codesign {
     public abstract class Action : MonoBehaviour
     {
         [Title("Action Settings")]
+        public bool IsUnavailable { get; set; } = false;
         public bool IsActive { get; set; } = false;
 
+        
         public Coroutine ActiveAutomaticCycle;
         [HideInInspector] public bool AutomaticIsActive = false;
 
@@ -21,6 +23,7 @@ namespace Codesign {
 
         public virtual IEnumerator Trigger()
         {
+            if(IsUnavailable) yield break;
             IsActive = true;
             yield return null;
         }

@@ -40,10 +40,13 @@ namespace Codesign
         [SerializeField, ShowIf("sprintUsesStatus")] private LevelingValue<float> sprintStatusCost = 3;
 
         [Header("Rotation")]
-        [SerializeField, Tooltip("Always rotates to face camera forward")] private bool targetLock = false;
+        [SerializeField, Tooltip("Always rotates to face camera forward")] private bool lockToCameraForward = false;
+        public bool LockToCameraForward { get { return lockToCameraForward; } set { lockToCameraForward = value; } }
         [SerializeField, Tooltip("Only Rotates when while moving")] private bool onlyRotateOnMove = false;
         public bool OnlyRotateOnMove { get { return onlyRotateOnMove; } set { onlyRotateOnMove = value;} }
         [SerializeField, Range(0.0f, 720f),] private float rotationSpeed = 180f;
+        public bool ForceRotate { get; set; } = false;
+
 
         [Header("Air")]
         [SerializeField, Tooltip("movement speed when not grounded")] private LevelingValue<float> airMoveSpeed = 3f;
@@ -70,8 +73,9 @@ namespace Codesign
         #endregion
 
         #region events
-        [SerializeField, FoldoutGroup("Events")] private UnityEvent IsSprinting;
+        [SerializeField, FoldoutGroup("Events")] private UnityEvent<bool> IsSprinting;
         [SerializeField, FoldoutGroup("Events")] private UnityEvent<Vector3> IsMoving;
+        [SerializeField, FoldoutGroup("Events")] private UnityEvent<Vector3> IsMovingScaled;
         #endregion
 
         private void Awake()
@@ -86,8 +90,9 @@ namespace Codesign
             MovementVector = Time.fixedDeltaTime * SpeedCalc() * DirectionCalc();
 
             IsMoving?.Invoke(MovementVector / Time.fixedDeltaTime);
+            IsMovingScaled?.Invoke(MovementVector / sprintSpeed / Time.fixedDeltaTime);
 
-            if(!onlyRotateOnMove || movementManager.InputDirection != Vector2.zero) RotationCalc();
+            if (!onlyRotateOnMove || movementManager.InputDirection != Vector2.zero || ForceRotate) RotationCalc();
 
             //Starts using Energy if target speed is close to sprint speed
             if (sprintUsesStatus && status != null && sprintSpeed - targetSpeed <= 1)
@@ -123,12 +128,7 @@ namespace Codesign
             else if (movementManager.IsGrounded)
             {
                 //Checks if sprinting
-                if (sprinting)
-                {
-                    //checks if sprint uses stanima and if character has enough stanima
-                    if (sprintUsesStatus && status.CurrentValue <= 0) targetSpeed = standardSpeed;
-                    else targetSpeed = sprintSpeed;
-                }
+                if (sprinting) targetSpeed = sprintSpeed;
                 else targetSpeed = standardSpeed;
             }
             else
@@ -165,7 +165,7 @@ namespace Codesign
             float rotSpeed = movementManager.IsGrounded ? rotationSpeed : airRotationSpeed;
 
             // set target rotation toward move direction or camera forward
-            if(targetLock || movementManager.InputDirection == Vector2.zero)
+            if(lockToCameraForward || movementManager.InputDirection == Vector2.zero)
                 targetRotation = movementManager.cam.transform.eulerAngles.y;
             else
                 targetRotation = Mathf.Atan2(movementManager.RelativeInput.normalized.x, movementManager.RelativeInput.normalized.z) * Mathf.Rad2Deg;
@@ -182,9 +182,13 @@ namespace Codesign
 
         public void OnSprint(InputAction.CallbackContext context)
         {
-            if (sprintUsesStatus && status.CurrentValue <= 0) return;
+            if (!context.performed) return;
+            if (sprintUsesStatus && status.CurrentValue <= 0) 
+                sprinting = false;
+            else 
+                sprinting = context.performed;
 
-            sprinting = context.performed;
+            IsSprinting?.Invoke(sprinting);
         }
     }
 }
