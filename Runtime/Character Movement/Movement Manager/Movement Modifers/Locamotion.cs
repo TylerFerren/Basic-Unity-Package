@@ -39,19 +39,11 @@ namespace Codesign
         [SerializeField, ShowIf("sprintUsesStatus")] private Status status;
         [SerializeField, ShowIf("sprintUsesStatus")] private LevelingValue<float> sprintStatusCost = 3;
 
-        [Header("Rotation")]
-        [SerializeField, Tooltip("Always rotates to face camera forward")] private bool lockToCameraForward = false;
-        public bool LockToCameraForward { get { return lockToCameraForward; } set { lockToCameraForward = value; } }
-        [SerializeField, Tooltip("Only Rotates when while moving")] private bool onlyRotateOnMove = false;
-        public bool OnlyRotateOnMove { get { return onlyRotateOnMove; } set { onlyRotateOnMove = value;} }
-        [SerializeField, Range(0.0f, 720f),] private float rotationSpeed = 180f;
-        public bool ForceRotate { get; set; } = false;
 
 
         [Header("Air")]
         [SerializeField, Tooltip("movement speed when not grounded")] private LevelingValue<float> airMoveSpeed = 3f;
         [SerializeField, Tooltip("adjusts amount of momentum lost when airborn")] private float airResitance = 1f;
-        [SerializeField, Range(0.0f, 720f),] private float airRotationSpeed = 150f;
         #endregion
 
         #region modifiers
@@ -69,7 +61,6 @@ namespace Codesign
         #region local
         private float currentSpeed;
         private float targetSpeed;
-        private float targetRotation;
         #endregion
 
         #region events
@@ -91,8 +82,6 @@ namespace Codesign
 
             IsMoving?.Invoke(MovementVector / Time.fixedDeltaTime);
             IsMovingScaled?.Invoke(MovementVector / sprintSpeed / Time.fixedDeltaTime);
-
-            if (!onlyRotateOnMove || movementManager.InputDirection != Vector2.zero || ForceRotate) RotationCalc();
 
             //Starts using Energy if target speed is close to sprint speed
             if (sprintUsesStatus && status != null && sprintSpeed - targetSpeed <= 1)
@@ -157,27 +146,6 @@ namespace Codesign
             currentSpeed = Mathf.Round(currentSpeed * 100f) / 100f;
 
             return currentSpeed;
-        }
-
-        private void RotationCalc()
-        {
-            //sets rotation speed based on if the character is grounded
-            float rotSpeed = movementManager.IsGrounded ? rotationSpeed : airRotationSpeed;
-
-            // set target rotation toward move direction or camera forward
-            if(lockToCameraForward || movementManager.InputDirection == Vector2.zero)
-                targetRotation = movementManager.cam.transform.eulerAngles.y;
-            else
-                targetRotation = Mathf.Atan2(movementManager.RelativeInput.normalized.x, movementManager.RelativeInput.normalized.z) * Mathf.Rad2Deg;
-            
-            //gets a angle to rotate the character toward the target rotation
-            float rotation = Mathf.MoveTowardsAngle(movementManager.controller.transform.eulerAngles.y, targetRotation, rotSpeed * Time.fixedDeltaTime);
-
-            // rotate to face input direction relative to camera position
-            movementManager.controller.transform.rotation = Quaternion.Lerp(movementManager.controller.transform.rotation, Quaternion.Euler(0.0f, rotation, 0.0f), rotSpeed * Time.fixedDeltaTime);
-
-            //angle between current heading and input heading
-            InputAngleChange = Vector3.SignedAngle(movementManager.controller.transform.forward, movementManager.InputDirection, Vector3.up) / 90;
         }
 
         public void OnSprint(InputAction.CallbackContext context)
