@@ -30,6 +30,28 @@ namespace Codesign {
             yield break;
         }
 
+        public IEnumerator Fire(Vector3 Destination, RangedAttack action, GameObject actor)
+        {
+            Vector3 previousLocation = transform.position;
+            detectibleLayers = action.AttackableLayers;
+            while (transform.position != Destination)
+            {
+                transform.position = Vector3.MoveTowards(transform.position, Destination, projectileSpeed * Time.deltaTime);
+
+                var ColliderHit = Physics.Linecast(previousLocation, transform.position, out RaycastHit hit, detectibleLayers, QueryTriggerInteraction.Ignore);
+
+                if (ColliderHit && !hit.collider.transform.IsChildOf(actor.transform))
+                {
+                    action.Hit(hit.collider);
+                    OnHit(action);
+                    yield break;
+                }
+                yield return new WaitForFixedUpdate();
+            }
+            OnHit(action);
+            yield break;
+        }
+
         private void OnHit(RangedAttack action) {
             if (action.poolProjectile)
             {

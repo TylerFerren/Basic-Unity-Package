@@ -5,18 +5,18 @@ using UnityEngine;
 
 namespace Codesign {
     [System.Serializable, Toggle("Enabled")]
-    public class AutomaticRefill
+    public class AutomaticUpdate
     {
         public bool Enabled;
-        [SerializeField] private float refillRate = 3;
-        [SerializeField] private float refillDelay = 3;
+        [field: SerializeField] public float UpdateRate { get; set; } = 1; 
+        [field: SerializeField] public float UpdateDelay { get; set; } = 1;
 
         public IEnumerator Refill(Status status)
         {
-            yield return new WaitForSeconds(refillDelay);
+            yield return new WaitForSeconds(UpdateDelay);
             while (status.CurrentValue < status.MaxValue)
             {
-                status.Refill(refillRate * Time.fixedDeltaTime);
+                status.Refill(UpdateRate * Time.fixedDeltaTime);
                 yield return null;
             }
         }

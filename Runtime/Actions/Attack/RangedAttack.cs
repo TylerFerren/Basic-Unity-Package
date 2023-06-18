@@ -125,11 +125,10 @@ namespace Codesign {
                         targetPosition = cam.transform.position + cam.transform.forward * AttackRange;
                     break;
                 case AttackTargetingType.MousePosition:
-                    Vector2 mousePosition = Mouse.current.position.ReadValue();
-                    Plane attackHeightPlane = new Plane(transform.up, firePoint);
-                    attackHeightPlane.Raycast(cam.ScreenPointToRay(mousePosition), out float distance);
-                    targetPosition = cam.ScreenToWorldPoint(new Vector3(mousePosition.x, mousePosition.y, distance));
-                    targetPosition = Vector3.MoveTowards(transform.TransformPoint(firePoint), targetPosition, AttackRange);
+                    Ray ray = cam.ScreenPointToRay(Input.mousePosition);
+                    new Plane(transform.up, origin).Raycast(ray, out float enter);
+                    Vector3 targetVector = (ray.GetPoint(enter) - (transform.position + new Vector3(0,firePoint.y,0))).normalized;
+                    targetPosition = origin + (targetVector * AttackRange);
                     break;
                 case AttackTargetingType.AutomaticTargeting:
                     if(TargetedObject) targetPosition = TargetedObject.bounds.center;
@@ -167,7 +166,7 @@ namespace Codesign {
                 bullet.transform.LookAt(targetPosition);
             }
             if (bullet.TryGetComponent(out Projectile _projectile))
-                StartCoroutine(_projectile.Fire(targetPosition, this));
+                StartCoroutine(_projectile.Fire(targetPosition, this, transform.root.gameObject));
             else Debug.LogWarning("Projectile prefab must have Projectile componet on it.");
             
         }
@@ -176,7 +175,7 @@ namespace Codesign {
         {
             Gizmos.color = new Color(1, 0.2f, 0.2f, 0.5f);
             Gizmos.DrawSphere(transform.TransformPoint(firePoint), 0.05f);
-            Handles.DrawWireDisc(transform.position, transform.up, AttackRange);
+            Handles.DrawWireDisc(transform.TransformPoint(firePoint), transform.up, AttackRange);
         }
 
     }

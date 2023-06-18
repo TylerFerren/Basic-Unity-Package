@@ -25,6 +25,7 @@ namespace Codesign
         [SerializeField] protected AttackTargetingType targetingType = AttackTargetingType.Perspective;
         [SerializeField, ShowIf("targetingType", AttackTargetingType.AutomaticTargeting)] protected AutomaticTargeting autoTargeting;
 
+
         public Collider TargetedObject { get; set; }
 
         [SerializeField, FoldoutGroup("Events"), PropertyOrder(99)] protected UnityEvent<Collider> OnHit;

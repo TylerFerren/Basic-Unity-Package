@@ -21,7 +21,7 @@ namespace Codesign
         public LevelingValue<float> maxValue = new LevelingValue<float>(100f, 100, 1.2f, 1.1f);
         public float MaxValue { get => maxValue; set => maxValue = value; }
 
-        [SerializeField] private AutomaticRefill _automaticRefill;
+        [SerializeField] private AutomaticUpdate _automaticUpdate;
 
         [FoldoutGroup("Event")]
         public UnityEvent<Status> StatusUpdate = new UnityEvent<Status>();
@@ -32,7 +32,7 @@ namespace Codesign
         {
             if (currentValue == 0) currentValue = maxValue.Value;
 
-            if (_automaticRefill.Enabled) ActiveAdjustment = StartCoroutine(_automaticRefill.Refill(this));
+            if (_automaticUpdate.Enabled) ActiveAdjustment = StartCoroutine(_automaticUpdate.Refill(this));
 
             StatusUpdate.Invoke(this);
             maxValue.OnValueUpdate.AddListener(delegate{ AdjustStatus(maxValue.Value - maxValue.curve.EvaluateInt(maxValue.Level-1));});
@@ -48,7 +48,7 @@ namespace Codesign
             currentValue = Mathf.Clamp(currentValue + value, 0, maxValue.Value);
             StatusUpdate.Invoke(this);
             if (ActiveAdjustment != null) StopCoroutine(ActiveAdjustment);
-            if (_automaticRefill.Enabled) ActiveAdjustment = StartCoroutine(_automaticRefill.Refill(this));
+            if (_automaticUpdate.Enabled) ActiveAdjustment = StartCoroutine(_automaticUpdate.Refill(this));
         }
 
         private void SetMax(float value)

@@ -106,7 +106,7 @@ namespace Codesign {
                 Random.Range(-halfExtents.x, halfExtents.x),
                 Random.Range(-halfExtents.y, halfExtents.y),
                 Random.Range(-halfExtents.z, halfExtents.z)
-            ));
+            )) + spawnArea.center;
         }
 
         public void SetMaxSpawnAmount(int newSpwanAmount)
