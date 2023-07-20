@@ -10,13 +10,11 @@ namespace Codesign
     public class EvaluationCurveDrawer : PropertyDrawer
     {
         private bool show;
-        private float testValue;
-
         private float width = 100;
         private float height = 200;
-        [SerializeField ]private int margin = 25;
+        private int margin = 25;
 
-        [UnityEngine.Range(2, 250)] private int curveResolution = 5;
+        private int curveResolution = 5;
         private SerializedProperty ExponetialGain;
         private SerializedProperty LinearGain;
         private SerializedProperty Floor;
@@ -36,10 +34,7 @@ namespace Codesign
             Floor = property.FindPropertyRelative("Floor");
             Styles();
 
-            
             EditorGUI.indentLevel ++;
-            //GUI.backgroundColor = new Color(2f, 2f, 2f);
-            
             EditorGUILayout.BeginVertical(containerStyle);
 
             EditorGUILayout.BeginHorizontal();
@@ -72,7 +67,6 @@ namespace Codesign
         private void GraphVisual() {
             Rect layoutRectangle = GUILayoutUtility.GetRect(200, height);
             EditorGUI.DrawRect(layoutRectangle, new Color(0.18f, 0.18f, 0.18f));
-            //GUI.Box(layoutRectangle);
             GUI.BeginClip(layoutRectangle);
             GridCalc();
             CurveCalc();
@@ -90,18 +84,12 @@ namespace Codesign
 
                 float verticalLocation = (height - margin) - (gridVert * i);
                 float verticalValue = (range * (i/ gridCount)) + min;
-                //verticalValue = Evaluate(i);
 
-                string gridLabel = (max < 20 ? verticalValue.ToString("0.#") : MathF.Round(verticalValue).ToString());
+                string gridLabel = max < 20 ? verticalValue.ToString("0.#") : MathF.Round(verticalValue).ToString();
 
                 Handles.Label(new Vector2(10 + (margin / 2), verticalLocation - (gridLabelStyle.CalcSize(new GUIContent(gridLabel)).y/2)), gridLabel, gridLabelStyle);
 
-                Handles.DrawAAPolyLine(
-                   Texture2D.grayTexture,
-                   0.3f,
-                   new Vector3(20 + (margin / 2), verticalLocation, 0),
-                   new Vector3(width  - (margin / 2), verticalLocation, 0)
-                );
+                Handles.DrawAAPolyLine(Texture2D.grayTexture, 0.3f, new Vector3(20 + (margin / 2), verticalLocation, 0), new Vector3(width  - (margin / 2), verticalLocation, 0));
             }
         }
 
@@ -119,8 +107,6 @@ namespace Codesign
 
             Handles.color = Color.red;
             Handles.DrawAAPolyLine(Texture2D.whiteTexture, 1, curvePoints.ToArray());
-
-            
 
             for (int i = 0; i < curvePoints.Count; i++)
             {
