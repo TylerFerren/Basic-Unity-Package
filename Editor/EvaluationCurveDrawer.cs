@@ -49,6 +49,7 @@ namespace Codesign
                 GUILayout.Label($"[1]{Evaluate(1)} | [{curveResolution}]{Evaluate(curveResolution)}");
             EditorGUILayout.EndHorizontal();
 
+            EditorGUI.indentLevel--;
             if (property != null && show) {
                 EditorGUILayout.Space(5);
                 width = EditorGUIUtility.currentViewWidth - 50;
@@ -66,7 +67,6 @@ namespace Codesign
                 EditorGUILayout.Space(5);
             }
             EditorGUILayout.EndVertical();
-            EditorGUI.indentLevel--;
         }
 
         private void GraphVisual() {
