@@ -41,7 +41,7 @@ namespace Codesign
                 show = EditorGUILayout.Foldout(show, label, true);
                 GUILayout.FlexibleSpace();
                 
-                GUILayout.Label($"[1]{Evaluate(1)} | [{curveResolution}]{Evaluate(curveResolution)}");
+                GUILayout.Label($"(1){Evaluate(1)}   |   ({curveResolution}){Evaluate(curveResolution)}");
             EditorGUILayout.EndHorizontal();
 
             EditorGUI.indentLevel--;
