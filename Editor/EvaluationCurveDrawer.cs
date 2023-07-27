@@ -35,6 +35,7 @@ namespace Codesign
             Styles();
 
             EditorGUI.indentLevel ++;
+            EditorGUILayout.Space(-EditorGUIUtility.singleLineHeight);
             EditorGUILayout.BeginVertical(containerStyle);
 
             EditorGUILayout.BeginHorizontal();
