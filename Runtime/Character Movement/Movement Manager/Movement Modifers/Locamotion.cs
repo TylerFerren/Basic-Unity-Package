@@ -28,8 +28,12 @@ namespace Codesign
 
         #region fields
         [SerializeField, Tooltip("Base Speed of standard movement")] private LevelingValue<float> standardSpeed = 5;
+        public float StandardSpeed { get { return standardSpeed; } set { standardSpeed = value; } }
         [SerializeField] private float acceleration = 5;
+        public float Acceleration { get { return acceleration; } set { acceleration = value; } }
         [SerializeField] private float directionalAcceleration = 3;
+        public float DirectionalAcceleration { get { return directionalAcceleration; } set { directionalAcceleration = value; } }
+
         [SerializeField] private AnimationCurve offAngleSpeedReduction = AnimationCurve.Constant(0, 180, 1);
         [SerializeField] private AnimationCurve slopeSpeedReduction = AnimationCurve.Constant(0, 180, 1);
 
