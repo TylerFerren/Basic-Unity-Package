@@ -25,6 +25,8 @@ namespace Codesign
 
         [FoldoutGroup("Event")]
         public UnityEvent<Status> StatusUpdate = new UnityEvent<Status>();
+        [FoldoutGroup("Event")]
+        public UnityEvent<float> StatusPercent = new UnityEvent<float>();
 
         protected Coroutine ActiveAdjustment;
 
@@ -35,6 +37,7 @@ namespace Codesign
             if (_automaticUpdate.Enabled) ActiveAdjustment = StartCoroutine(_automaticUpdate.Refill(this));
 
             StatusUpdate.Invoke(this);
+            StatusPercent.Invoke(CurrentValue/MaxValue);
             maxValue.OnValueUpdate.AddListener(delegate{ AdjustStatus(maxValue.Value - maxValue.curve.EvaluateInt(maxValue.Level-1));});
         }
 
@@ -47,6 +50,7 @@ namespace Codesign
         {
             currentValue = Mathf.Clamp(currentValue + value, 0, maxValue.Value);
             StatusUpdate.Invoke(this);
+            StatusPercent.Invoke(CurrentValue / MaxValue);
             if (ActiveAdjustment != null) StopCoroutine(ActiveAdjustment);
             if (_automaticUpdate.Enabled) ActiveAdjustment = StartCoroutine(_automaticUpdate.Refill(this));
         }
@@ -64,6 +68,7 @@ namespace Codesign
             {
                 currentValue = Mathf.Clamp(currentValue + AdjustRate * Time.deltaTime, 0, maxValue.Value);
                 StatusUpdate?.Invoke(this);
+                StatusPercent?.Invoke(CurrentValue / MaxValue);
                 yield return null;
             }
         }
@@ -94,6 +99,7 @@ namespace Codesign
         public void Refill(float value) {
             currentValue = Mathf.Clamp(currentValue + value, 0, maxValue.Value);
             StatusUpdate.Invoke(this);
+            StatusPercent.Invoke(CurrentValue / MaxValue);
         }
 
 

@@ -1,8 +1,10 @@
 using System;
 using System.Collections.Generic;
+using System.Security.AccessControl;
 using UnityEditor;
 using UnityEditorInternal;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 namespace Codesign
 {
@@ -33,18 +35,18 @@ namespace Codesign
             LinearGain = property.FindPropertyRelative("LinearGain");
             Floor = property.FindPropertyRelative("Floor");
             Styles();
-
-            EditorGUI.indentLevel ++;
+            EditorGUILayout.Space(- EditorGUIUtility.singleLineHeight);
             EditorGUILayout.BeginVertical(containerStyle);
-
+            
             EditorGUILayout.BeginHorizontal();
-                show = EditorGUILayout.Foldout(show, label, true);
-                GUILayout.FlexibleSpace();
+                EditorGUI.indentLevel ++;
+                    show = EditorGUILayout.Foldout(show, label, true);
+                    GUILayout.FlexibleSpace();
                 
-                GUILayout.Label($"(1){Evaluate(1)}   |   ({curveResolution}){Evaluate(curveResolution)}");
+                    GUILayout.Label($"(1){Evaluate(1)}   |   ({curveResolution}){Evaluate(curveResolution)}");
+                EditorGUI.indentLevel--;
             EditorGUILayout.EndHorizontal();
 
-            EditorGUI.indentLevel--;
             if (property != null && show) {
                 EditorGUILayout.Space(5);
                 width = EditorGUIUtility.currentViewWidth - 50;
