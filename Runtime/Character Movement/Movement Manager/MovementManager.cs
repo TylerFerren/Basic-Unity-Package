@@ -21,7 +21,7 @@ namespace Codesign
 
         #region MovementModifers
         private List<IMovementModifier> movementModifiers = new List<IMovementModifier>();
-
+        public List<IMovementModifier> MovementModifiers { get { return movementModifiers; } private set { } }
         public void AddMovementModifer(IMovementModifier movementModifier) => movementModifiers.Add(movementModifier);
 
         public void RemoveMovementModifer(IMovementModifier movementModifier) => movementModifiers.Remove(movementModifier);

@@ -35,7 +35,10 @@ namespace Codesign
             LinearGain = property.FindPropertyRelative("LinearGain");
             Floor = property.FindPropertyRelative("Floor");
             Styles();
+
+            EditorGUI.indentLevel ++;
             EditorGUILayout.Space(- EditorGUIUtility.singleLineHeight);
+
             EditorGUILayout.BeginVertical(containerStyle);
             
             EditorGUILayout.BeginHorizontal();
