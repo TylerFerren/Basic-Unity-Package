@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Sirenix.OdinInspector;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 namespace Codesign
 {
@@ -24,7 +25,7 @@ namespace Codesign
 
         private MovementManager movementManager = null;
 
-        private enum RotationType {MovementBased, PointerBased }
+        private enum RotationType {MovementBased, InputBased }
 
         #region Fields
         [Header("Rotation")]
@@ -35,7 +36,7 @@ namespace Codesign
         [SerializeField, ShowIf("rotationType", RotationType.MovementBased), Tooltip("Only Rotates when while moving")] private bool onlyRotateOnMove = false;
         public bool OnlyRotateOnMove { get { return onlyRotateOnMove; } set { onlyRotateOnMove = value; } }
 
-        [SerializeField, ShowIf("rotationType", RotationType.PointerBased)] private bool useStandardCursor;
+        [SerializeField, ShowIf("rotationType", RotationType.InputBased)] private bool useStandardCursor;
 
         [SerializeField, Range(0.0f, 720f),] private float rotationSpeed = 180f;
         public bool ForceRotate { get; set; } = false;
@@ -51,8 +52,13 @@ namespace Codesign
         #region Local
         private float targetRotation;
         private Vector3 pointerPosition;
+        private Vector2 inputDirection;
         private Vector3 targetDirection;
         #endregion
+
+        public void OnLook(InputAction.CallbackContext context) { 
+            inputDirection = context.ReadValue<Vector2>();
+        }
 
         private void Awake()
         {
@@ -62,29 +68,34 @@ namespace Codesign
         private void FixedUpdate()
         {
 
-            if (useStandardCursor) pointerPosition = Input.mousePosition;
+            
             if (!onlyRotateOnMove || movementManager.InputDirection != Vector2.zero || ForceRotate)
-                if (rotationType == RotationType.PointerBased) RotateTowardsPointer();
-                else RotateByInput();
-                //RotationCalc();
+                if (rotationType == RotationType.InputBased) RotateTowardsInput();
+                else RotateByMovement();
         }
 
-        private void RotateTowardsPointer()
+        private void RotateTowardsInput()
         {
-            
-
-            // Cast a ray from the camera to the pointer position
-            Ray ray = movementManager.cam.ScreenPointToRay(pointerPosition);
-            if (Physics.Raycast(ray, out RaycastHit hit))
+            /*
+            if (useStandardCursor)
             {
-                targetDirection = hit.point - movementManager.controller.transform.position;
-                targetDirection.y = 0f; // Ignore vertical component for 3D rotation
+                pointerPosition = Input.mousePosition;
+                // Cast a ray from the camera to the pointer position
+                Ray ray = movementManager.cam.ScreenPointToRay(pointerPosition);
+                if (Physics.Raycast(ray, out RaycastHit hit))
+                {
+                    targetDirection = hit.point - movementManager.controller.transform.position;
+                    targetDirection.y = 0f; // Ignore vertical component for 3D rotation
+                }
             }
-
+            */
+            
+            if(inputDirection != Vector2.zero)
+                targetDirection = Vector3.Lerp(targetDirection, new Vector3(inputDirection.x, 0, inputDirection.y), Time.fixedDeltaTime * 3);
             RotatePlayer();
         }
 
-        private void RotateByInput()
+        private void RotateByMovement()
         {
             //Set target rotation toward move direction or camera forward
             if (lockToCameraForward || movementManager.InputDirection == Vector2.zero)
@@ -109,45 +120,5 @@ namespace Codesign
             }
         }
 
-        //private void RotationCalc()
-        //{
-        //    // Set rotation speed based on whether the character is grounded
-        //    float rotSpeed = movementManager.IsGrounded ? rotationSpeed : airRotationSpeed;
-        //    float rotation;
-
-        //    if (rotationType == RotationType.MovementBased)
-        //    {
-        //        // Set target rotation toward move direction or camera forward
-        //        if (lockToCameraForward || movementManager.InputDirection == Vector2.zero)
-        //            targetRotation = movementManager.cam.transform.eulerAngles.y;
-        //        else
-        //            targetRotation = Mathf.Atan2(movementManager.RelativeInput.normalized.x, movementManager.RelativeInput.normalized.z) * Mathf.Rad2Deg;
-
-        //        // Get the angle to rotate the character toward the target rotation
-        //        rotation = Mathf.MoveTowardsAngle(movementManager.controller.transform.eulerAngles.y, targetRotation, rotSpeed * Time.fixedDeltaTime);
-        //    }
-        //    else
-        //    {
-        //        // Convert the pointer position to world coordinates
-        //        Vector3 worldMousePosition = movementManager.cam.ScreenToWorldPoint(new Vector3(pointerPosition.x, pointerPosition.y, movementManager.controller.transform.position.z - movementManager.cam.transform.position.z));
-
-        //        // Calculate the direction from the player to the mouse position
-        //        Vector3 direction = worldMousePosition - movementManager.controller.transform.position;
-
-        //        // Calculate the rotation angle based on the direction
-        //        //rotation = Mathf.Atan2(direction.x, direction.z) * Mathf.Rad2Deg;
-
-        //        Quaternion targetRotationQ = Quaternion.LookRotation(direction);
-
-        //        rotation = Quaternion.Angle(movementManager.controller.transform.rotation, targetRotationQ);
-
-        //    }
-
-        //    // Rotate to face input direction relative to camera position
-        //    movementManager.controller.transform.rotation = Quaternion.Lerp(movementManager.controller.transform.rotation, Quaternion.Euler(0.0f, rotation, 0.0f), rotSpeed * Time.fixedDeltaTime);
-
-        //    // Angle between current heading and input heading
-        //    InputAngleChange = Vector3.SignedAngle(movementManager.controller.transform.forward, movementManager.InputDirection, Vector3.up) / 90;
-        //}
     }
 }
