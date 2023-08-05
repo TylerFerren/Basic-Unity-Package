@@ -25,7 +25,7 @@ namespace Codesign
 
         private MovementManager movementManager = null;
 
-        private enum RotationType {MovementBased, InputBased }
+        private enum RotationType {MovementBased, InputBased, PointerBased }
 
         #region Fields
         [Header("Rotation")]
@@ -68,15 +68,43 @@ namespace Codesign
         private void FixedUpdate()
         {
 
-            
+
             if (!onlyRotateOnMove || movementManager.InputDirection != Vector2.zero || ForceRotate)
-                if (rotationType == RotationType.InputBased) RotateTowardsInput();
-                else RotateByMovement();
+            {
+                switch (rotationType)
+                {
+                    case RotationType.MovementBased:
+                        RotateByMovement();
+                        break;
+                    case RotationType.InputBased:
+                        RotateTowardsInput();
+                        break;
+                    case RotationType.PointerBased:
+                        RotateTowardsPointer();
+                        break;
+                };
+            }
+        }
+
+        private void RotateByMovement()
+        {
+            //Set target rotation toward move direction or camera forward
+            if (lockToCameraForward || movementManager.InputDirection == Vector2.zero)
+                targetDirection = Vector3.zero;
+            else
+                targetDirection = movementManager.RelativeInput.normalized;
+
+            RotatePlayer();
         }
 
         private void RotateTowardsInput()
         {
-            /*
+            if(inputDirection != Vector2.zero)
+                targetDirection = Vector3.Lerp(targetDirection, new Vector3(inputDirection.x, 0, inputDirection.y), Time.fixedDeltaTime * 3);
+            RotatePlayer();
+        }
+
+        private void RotateTowardsPointer() {
             if (useStandardCursor)
             {
                 pointerPosition = Input.mousePosition;
@@ -88,21 +116,6 @@ namespace Codesign
                     targetDirection.y = 0f; // Ignore vertical component for 3D rotation
                 }
             }
-            */
-            
-            if(inputDirection != Vector2.zero)
-                targetDirection = Vector3.Lerp(targetDirection, new Vector3(inputDirection.x, 0, inputDirection.y), Time.fixedDeltaTime * 3);
-            RotatePlayer();
-        }
-
-        private void RotateByMovement()
-        {
-            //Set target rotation toward move direction or camera forward
-            if (lockToCameraForward || movementManager.InputDirection == Vector2.zero)
-                targetDirection = Vector3.zero;
-            else
-                targetDirection = movementManager.RelativeInput.normalized;
-            
             RotatePlayer();
         }
 

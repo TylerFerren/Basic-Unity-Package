@@ -46,6 +46,7 @@ namespace Codesign
         [ToggleGroup("useGravity"), SerializeField] private Vector3 gravity = Physics.gravity;
         public Vector3 Gravity { get { return gravity; } }
 
+        [SerializeField] private bool HideCursor;
         [SerializeField] private bool LockCursor;
 
         public float TimeTillLand { get; private set; } = 0;
@@ -64,6 +65,8 @@ namespace Codesign
 
         private void Start()
         {
+            if (HideCursor)
+                Cursor.visible = !HideCursor;
             if(LockCursor) Cursor.lockState = CursorLockMode.Locked;
         }
 

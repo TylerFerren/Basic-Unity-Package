@@ -30,21 +30,22 @@ namespace Codesign
 
         protected Coroutine ActiveAdjustment;
 
+        
         public void OnEnable()
         {
+            
             if (currentValue == 0) currentValue = maxValue.Value;
 
             if (_automaticUpdate.Enabled) ActiveAdjustment = StartCoroutine(_automaticUpdate.Refill(this));
 
             StatusUpdate.Invoke(this);
             StatusPercent.Invoke(CurrentValue/MaxValue);
-            
-            maxValue?.OnValueUpdate.AddListener(delegate{ AdjustStatus(maxValue.Value - maxValue.curve.EvaluateInt(maxValue.Level-1));});
+            maxValue?.OnValueUpdate.AddListener(() => AdjustStatus(maxValue.Value - maxValue.curve.EvaluateInt(maxValue.Level - 1)));
         }
 
         public void OnDisable()
         {
-            maxValue.OnValueUpdate.RemoveListener(delegate { AdjustStatus(0);});
+            maxValue.OnValueUpdate.RemoveAllListeners();
         }
 
         public void AdjustStatus(float value)
