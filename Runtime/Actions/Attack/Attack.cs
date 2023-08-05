@@ -11,7 +11,7 @@ namespace Codesign
 {
     public abstract class Attack : Ability
     {
-        protected enum AttackTargetingType { Perspective, MousePosition, AutomaticTargeting, None }
+        protected enum AttackTargetingType { Perspective, ForwardDirection, MousePosition,  AutomaticTargeting, None }
 
         [Title("Attack Settings")]
         [SerializeField] protected LayerMask attackableLayers;

@@ -124,6 +124,9 @@ namespace Codesign {
                     else
                         targetPosition = cam.transform.position + cam.transform.forward * AttackRange;
                     break;
+                case AttackTargetingType.ForwardDirection:
+                    targetPosition = origin + (transform.forward * AttackRange);
+                    break;
                 case AttackTargetingType.MousePosition:
                     Ray ray = cam.ScreenPointToRay(Input.mousePosition);
                     new Plane(transform.up, origin).Raycast(ray, out float enter);
