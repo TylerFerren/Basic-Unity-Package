@@ -36,7 +36,6 @@ namespace Codesign
             Floor = property.FindPropertyRelative("Floor");
             Styles();
 
-            EditorGUI.indentLevel ++;
             EditorGUILayout.Space(- EditorGUIUtility.singleLineHeight);
 
             EditorGUILayout.BeginVertical(containerStyle);
