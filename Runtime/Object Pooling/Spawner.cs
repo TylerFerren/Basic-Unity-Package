@@ -3,7 +3,8 @@ using System.Collections.Generic;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
-namespace Codesign {
+namespace Codesign
+{
     public enum SpawnerType { Simple, WaveSystem }
     public enum SpawnTypes { Burst, Continuous }
     public abstract class Spawner : MonoBehaviour
@@ -16,12 +17,15 @@ namespace Codesign {
         [SerializeField] protected bool useObjectPool;
         [SerializeField, ShowIf("useObjectPool")] protected ObjectPooler objectPooler;
 
-        
+
         public int MaxSpawnAmount { get { return maxSpawnAmount; } private set { } }
         public List<GameObject> CurrentSpawnedObjects { get { return spawnedObjects; } private set { } }
 
+        private bool intialSpawn = false;
+
         public virtual void Awake()
         {
+            intialSpawn = true;
             if (!useObjectPool) return;
             if (objectPooler == null)
             {
@@ -34,18 +38,30 @@ namespace Codesign {
 
         public IEnumerator Spawn(SpawnContext context)
         {
-            for (int i = 0; i < context.spawnAmount; i++)
+            float spawnAmount = context.SpawnType == SpawnTypes.Burst ? context.spawnAmount : context.InitialSpawnAmount;
+
+            spawnAmount = Mathf.Max(spawnAmount, 1);
+
+            for (int i = 0; i < spawnAmount; i++)
             {
                 SpawnObject(context.itemsToSpawn);
 
                 if (spawnedObjects.Count >= maxSpawnAmount) break;
 
-                if (context.SpawnType == SpawnTypes.Continuous)
+                print(intialSpawn);
+
+                if (intialSpawn == false && context.SpawnType == SpawnTypes.Continuous)
+                {
                     yield return new WaitForSeconds(context.SpawnDelay);
+                }
             }
+
+            intialSpawn = false;
 
             if (context.SpawnType == SpawnTypes.Continuous)
                 StartCoroutine(SpawnWaiter(context));
+
+            yield return null;
         }
 
         private IEnumerator SpawnWaiter(SpawnContext context)
@@ -57,7 +73,7 @@ namespace Codesign {
             }
             StartCoroutine(Spawn(context));
         }
-    
+
         protected void SpawnObject(List<SpawnItem> spawnItems)
         {
             int objectSeed = Random.Range(0, spawnItems.Count);
@@ -74,7 +90,7 @@ namespace Codesign {
                 position = RandomLocation();
             }
 
-            GameObject spawnedObject = null;
+            GameObject spawnedObject;
             if (useObjectPool)
             {
                 spawnedObject = objectPooler.GetPooledObject(spawnItem.objectToSpawn);
@@ -132,6 +148,8 @@ namespace Codesign {
         public SpawnTypes SpawnType;
         [ShowIf("SpawnType", SpawnTypes.Burst)] public int spawnAmount;
         [Tooltip("Delay in seconds between spawns"), ShowIf("SpawnType", SpawnTypes.Continuous)] public float SpawnDelay;
+        [ShowIf("SpawnType", SpawnTypes.Continuous)] public float InitialSpawnAmount;
+
 
     }
 
