@@ -16,8 +16,8 @@ namespace Codesign {
         public Coroutine ActiveAutomaticCycle;
         [HideInInspector] public bool AutomaticIsActive = false;
 
-        [SerializeField, FoldoutGroup("Events"), PropertyOrder(99)] protected UnityEvent OnTrigger;
-        [SerializeField, FoldoutGroup("Events"), PropertyOrder(99)] protected UnityEvent OnRelease;
+        [ FoldoutGroup("Events"), PropertyOrder(99)] public UnityEvent OnTrigger;
+        [ FoldoutGroup("Events"), PropertyOrder(99)] public UnityEvent OnRelease;
 
         public Coroutine activeAction;
 

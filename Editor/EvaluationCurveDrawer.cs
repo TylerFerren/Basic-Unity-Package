@@ -57,6 +57,7 @@ namespace Codesign
                 max = MathF.Max(Evaluate(curveResolution), Evaluate(0));
                 min = MathF.Min(Evaluate(curveResolution), Evaluate(0));
                 range = MathF.Abs(Evaluate(curveResolution) - Evaluate(0));
+                if (range == 0) range = 1;
 
                 EditorGUILayout.Space(5);
                 EditorGUILayout.PropertyField(Floor, new GUIContent("Floor"));

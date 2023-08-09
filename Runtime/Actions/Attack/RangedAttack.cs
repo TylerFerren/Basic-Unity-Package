@@ -21,6 +21,8 @@ namespace Codesign {
         public Vector3 FirePoint { get { return firePoint; } }
 
         [SerializeField, FoldoutGroup("Fire Rate")] protected LevelingValue<float> fireRate = 2;
+        public float FireRate { get { return fireRate; } set { fireRate = value; } }
+
         [SerializeField, FoldoutGroup("Fire Rate")] protected bool continuousFire;
 
 
@@ -32,7 +34,7 @@ namespace Codesign {
 
         [SerializeField] protected RecoilSystem recoil = new RecoilSystem();
 
-        [SerializeField, FoldoutGroup("Events"), PropertyOrder(99)] protected UnityEvent onFire;
+        [FoldoutGroup("Events"), PropertyOrder(99)] public UnityEvent OnFire;
         [SerializeField, FoldoutGroup("Events"), PropertyOrder(99)] protected UnityEvent<Vector3, Vector3> onFirePositions;
 
         private float spreadTime;
@@ -52,9 +54,9 @@ namespace Codesign {
         {
             base.Awake();
             if (targetingType != AttackTargetingType.AutomaticTargeting) cam = Camera.main;
-            if (ammo.Enabled) onFire.AddListener(ammo.UseAmmo);
-            if (overheat.Enabled) onFire.AddListener(() => StartCoroutine(overheat.HeatUp(overheat.heatBuildUp / fireRate)));
-            if (recoil.Enabled) onFire.AddListener(recoil.Recoil);
+            if (ammo.Enabled) OnFire.AddListener(ammo.UseAmmo);
+            if (overheat.Enabled) OnFire.AddListener(() => StartCoroutine(overheat.HeatUp(overheat.heatBuildUp / fireRate)));
+            if (recoil.Enabled) OnFire.AddListener(recoil.Recoil);
 
             if (poolProjectile && pooler && pooler.ObjectsToPool.Find(n => n.objectToPool == projectile) == null) {
                 pooler.ObjectsToPool.Add(new ObjectPoolItem(projectile, 5, true, pooler));
@@ -91,7 +93,7 @@ namespace Codesign {
                     break;
             }
 
-            onFire?.Invoke();
+            OnFire?.Invoke();
             onFirePositions?.Invoke(transform.TransformPoint(firePoint), targetPosition);
 
             if (Time.time - lastFireTime < spread.SpreadTime) spreadTime = (Time.time - lastFireTime) / spread.SpreadTime;
@@ -119,19 +121,19 @@ namespace Codesign {
 
             switch (targetingType) {
                 case AttackTargetingType.Perspective:
-                    if (Physics.Raycast(cam.transform.position, cam.transform.forward, out RaycastHit hit, AttackRange, attackableLayers, QueryTriggerInteraction.Ignore))
+                    if (Physics.Raycast(cam.transform.position, cam.transform.forward, out RaycastHit hit, attackRange, attackableLayers, QueryTriggerInteraction.Ignore))
                         targetPosition = hit.point;
                     else
-                        targetPosition = cam.transform.position + cam.transform.forward * AttackRange;
+                        targetPosition = cam.transform.position + cam.transform.forward * attackRange;
                     break;
                 case AttackTargetingType.ForwardDirection:
-                    targetPosition = origin + (transform.forward * AttackRange);
+                    targetPosition = origin + (transform.forward * attackRange);
                     break;
                 case AttackTargetingType.MousePosition:
                     Ray ray = cam.ScreenPointToRay(Input.mousePosition);
                     new Plane(transform.up, origin).Raycast(ray, out float enter);
                     Vector3 targetVector = (ray.GetPoint(enter) - (transform.position + new Vector3(0,firePoint.y,0))).normalized;
-                    targetPosition = origin + (targetVector * AttackRange);
+                    targetPosition = origin + (targetVector * attackRange);
                     break;
                 case AttackTargetingType.AutomaticTargeting:
                     if(TargetedObject) targetPosition = TargetedObject.bounds.center;
@@ -178,7 +180,7 @@ namespace Codesign {
         {
             Gizmos.color = new Color(1, 0.2f, 0.2f, 0.5f);
             Gizmos.DrawSphere(transform.TransformPoint(firePoint), 0.05f);
-            Handles.DrawWireDisc(transform.TransformPoint(firePoint), transform.up, AttackRange);
+            Handles.DrawWireDisc(transform.TransformPoint(firePoint), transform.up, attackRange);
         }
 
     }

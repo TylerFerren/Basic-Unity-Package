@@ -40,12 +40,12 @@ namespace Codesign
 
             StatusUpdate.Invoke(this);
             StatusPercent.Invoke(CurrentValue/MaxValue);
-            maxValue?.OnValueUpdate.AddListener(() => AdjustStatus(maxValue.Value - maxValue.curve.EvaluateInt(maxValue.Level - 1)));
+            maxValue.OnValueUpdate?.AddListener(() => AdjustStatus(maxValue.Value - maxValue.curve.EvaluateInt(maxValue.Level - 1)));
         }
 
         public void OnDisable()
         {
-            maxValue.OnValueUpdate.RemoveAllListeners();
+            maxValue.OnValueUpdate?.RemoveAllListeners();
         }
 
         public void AdjustStatus(float value)

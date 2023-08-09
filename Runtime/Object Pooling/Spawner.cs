@@ -48,8 +48,6 @@ namespace Codesign
 
                 if (spawnedObjects.Count >= maxSpawnAmount) break;
 
-                print(intialSpawn);
-
                 if (intialSpawn == false && context.SpawnType == SpawnTypes.Continuous)
                 {
                     yield return new WaitForSeconds(context.SpawnDelay);

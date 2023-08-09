@@ -18,9 +18,12 @@ namespace Codesign
         public LayerMask AttackableLayers { get { return attackableLayers; } set { attackableLayers = value;} }
 
         [SerializeField, FoldoutGroup("Damage")] protected LevelingValue<float> damage = 10;
+        public float Damage { get { return damage; } set { damage = value; } }
+
         [SerializeField, FoldoutGroup("Damage")] protected LevelingValue<float> criticalDamage = 20;
 
-        [SerializeField] protected LevelingValue<float> AttackRange = 3;
+        [SerializeField] protected LevelingValue<float> attackRange = 3;
+        public float AttackRange { get { return attackRange; } set { attackRange = value; } }
 
         [SerializeField] protected AttackTargetingType targetingType = AttackTargetingType.Perspective;
         [SerializeField, ShowIf("targetingType", AttackTargetingType.AutomaticTargeting)] protected AutomaticTargeting autoTargeting;
