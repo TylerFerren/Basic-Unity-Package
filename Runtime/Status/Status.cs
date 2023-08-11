@@ -33,7 +33,6 @@ namespace Codesign
         
         public void OnEnable()
         {
-            
             if (currentValue == 0) currentValue = maxValue.Value;
 
             if (_automaticUpdate.Enabled) ActiveAdjustment = StartCoroutine(_automaticUpdate.Refill(this));
@@ -66,7 +65,8 @@ namespace Codesign
 
         public IEnumerator AdjustOverTime(float AdjustRate)
         {
-            while (currentValue < maxValue.Value)
+            bool evaluation = AdjustRate > 0 ? currentValue < maxValue.Value : currentValue > 0;
+            while (evaluation)
             {
                 currentValue = Mathf.Clamp(currentValue + AdjustRate * Time.deltaTime, 0, maxValue.Value);
                 StatusUpdate?.Invoke(this);

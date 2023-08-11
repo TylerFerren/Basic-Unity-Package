@@ -54,7 +54,6 @@ namespace Codesign
 
         public void SetupStatusBar()
         {
-
             var newGameObject = new GameObject();
             newGameObject.transform.parent = transform;
             newGameObject.transform.localScale = Vector3.one;
