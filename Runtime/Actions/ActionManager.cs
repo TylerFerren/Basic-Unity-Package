@@ -22,11 +22,23 @@ namespace Codesign {
             }
         }
 
+        public void AddAction(Action action, ActionTriggerType triggerType, InputActionReference input) {
+            ActionInstance newAction = new ActionInstance()
+            {
+                action = action,
+                triggerType = triggerType,
+                inputRef = input
+            };
+            newAction.EnableInstance();
+            Actions.Add(newAction);
+        }
+
         private void OnEnable()
         {
             foreach (ActionInstance instance in Actions)
             {
                 instance.EnableInstance();
+                print(instance.action.name);
             }
         }
 
@@ -45,8 +57,8 @@ namespace Codesign {
     public struct ActionInstance
     {
         public Action action;
-        [SerializeField] private ActionTriggerType triggerType;
-        [SerializeField, ShowIf("triggerType", ActionTriggerType.UserInput)] private InputActionReference inputRef;
+        public ActionTriggerType triggerType;
+        [ShowIf("triggerType", ActionTriggerType.UserInput)] public InputActionReference inputRef;
 
         public void EnableInstance()
         {

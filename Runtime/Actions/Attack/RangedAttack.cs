@@ -8,22 +8,23 @@ using UnityEditor;
 namespace Codesign {
     public class RangedAttack : Attack
     {
-        protected enum RangedType {Raycast, Projectile}
+        public enum RangedType {Raycast, Projectile}
 
         [Title("Ranged Settings")]
-        [SerializeField] protected RangedType rangedType;
-        [SerializeField, ShowIf("rangedType", RangedType.Projectile)] protected GameObject projectile;
+        public RangedType rangedType;
+        [ShowIf("rangedType", RangedType.Projectile)] public GameObject projectile;
         [SerializeField, ShowIf("rangedType", RangedType.Projectile)] public bool poolProjectile;
         [SerializeField, ShowIf("poolProjectile")] protected ObjectPooler pooler;
-        public ObjectPooler Pooler { get { return pooler; } }
+        public ObjectPooler Pooler { get { return pooler; } set { Pooler = value; } }
 
         [SerializeField, Tooltip("The Origin of the Ranged Attack")] protected Vector3 firePoint;
-        public Vector3 FirePoint { get { return firePoint; } }
+        public Vector3 FirePoint { get { return firePoint; } set { firePoint = value; } }
 
         [SerializeField, FoldoutGroup("Fire Rate")] protected LevelingValue<float> fireRate = 2;
         public float FireRate { get { return fireRate; } set { fireRate = value; } }
 
         [SerializeField, FoldoutGroup("Fire Rate")] protected bool continuousFire;
+        public bool ContinuousFire { get { return continuousFire; } set { continuousFire = value; } }
 
 
         [SerializeField] protected SpreadSystem spread = new SpreadSystem();
@@ -57,8 +58,8 @@ namespace Codesign {
             if (ammo.Enabled) OnFire.AddListener(ammo.UseAmmo);
             if (overheat.Enabled) OnFire.AddListener(() => StartCoroutine(overheat.HeatUp(overheat.heatBuildUp / fireRate)));
             if (recoil.Enabled) OnFire.AddListener(recoil.Recoil);
-
-            if (poolProjectile && pooler && pooler.ObjectsToPool.Find(n => n.objectToPool == projectile) == null) {
+            if (poolProjectile && pooler == null) pooler = GetComponent<ObjectPooler>();
+            if (poolProjectile && pooler && !pooler.ObjectsToPool.Exists(n => n.objectToPool == projectile)) {
                 pooler.ObjectsToPool.Add(new ObjectPoolItem(projectile, 5, true, pooler));
             }
         }

@@ -11,11 +11,11 @@ namespace Codesign
 {
     public abstract class Attack : Ability
     {
-        protected enum AttackTargetingType { Perspective, ForwardDirection, MousePosition,  AutomaticTargeting, None }
+        public enum AttackTargetingType { Perspective, ForwardDirection, MousePosition, AutomaticTargeting, None }
 
         [Title("Attack Settings")]
         [SerializeField] protected LayerMask attackableLayers;
-        public LayerMask AttackableLayers { get { return attackableLayers; } set { attackableLayers = value;} }
+        public LayerMask AttackableLayers { get { return attackableLayers; } set { attackableLayers = value; } }
 
         [SerializeField, FoldoutGroup("Damage")] protected LevelingValue<float> damage = 10;
         public float Damage { get { return damage; } set { damage = value; } }
@@ -25,7 +25,7 @@ namespace Codesign
         [SerializeField] protected LevelingValue<float> attackRange = 3;
         public float AttackRange { get { return attackRange; } set { attackRange = value; } }
 
-        [SerializeField] protected AttackTargetingType targetingType = AttackTargetingType.Perspective;
+        [field: SerializeField] public AttackTargetingType targetingType { get; set; } = AttackTargetingType.Perspective;
         [SerializeField, ShowIf("targetingType", AttackTargetingType.AutomaticTargeting)] protected AutomaticTargeting autoTargeting;
 
 
