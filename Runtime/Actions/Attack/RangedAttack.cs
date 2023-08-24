@@ -28,6 +28,7 @@ namespace Codesign {
 
 
         [SerializeField] protected SpreadSystem spread = new SpreadSystem();
+        public SpreadSystem Spread { get { return spread; } set { spread = value; } }
 
         [SerializeField] protected OverheatSystem overheat = new OverheatSystem();
 
@@ -94,6 +95,8 @@ namespace Codesign {
                     break;
             }
 
+            
+
             OnFire?.Invoke();
             onFirePositions?.Invoke(transform.TransformPoint(firePoint), targetPosition);
 
@@ -144,6 +147,11 @@ namespace Codesign {
                 targetOffset = spread.SpreadCalc(spreadTime);
 
             targetPosition += targetOffset;
+
+            var Vector = (targetPosition - transform.TransformPoint(firePoint)).normalized * attackRange;
+            print(targetPosition);
+            targetPosition = transform.TransformPoint(firePoint) + Vector;
+
         }
 
         public void LinecastShot() {
@@ -159,6 +167,8 @@ namespace Codesign {
 
         public void ProjectileShot()
         {
+            
+
             GameObject bullet = null;
             if (poolProjectile && pooler)
             {
@@ -166,13 +176,16 @@ namespace Codesign {
                 bullet.transform.position = transform.TransformPoint(firePoint);
                 bullet.transform.LookAt(targetPosition);
             }
-            if (bullet == null) {
+            if (bullet == null)
+            {
                 if (poolProjectile) print("no pooled object availible");
                 bullet = Instantiate(projectile, transform.TransformPoint(firePoint), transform.rotation, null);
                 bullet.transform.LookAt(targetPosition);
             }
             if (bullet.TryGetComponent(out Projectile _projectile))
+            {
                 StartCoroutine(_projectile.Fire(targetPosition, this, transform.root.gameObject));
+            }
             else Debug.LogWarning("Projectile prefab must have Projectile componet on it.");
             
         }
@@ -181,6 +194,7 @@ namespace Codesign {
         {
             Gizmos.color = new Color(1, 0.2f, 0.2f, 0.5f);
             Gizmos.DrawSphere(transform.TransformPoint(firePoint), 0.05f);
+            Gizmos.DrawSphere(targetPosition, 0.01f);
             Handles.DrawWireDisc(transform.TransformPoint(firePoint), transform.up, attackRange);
         }
 

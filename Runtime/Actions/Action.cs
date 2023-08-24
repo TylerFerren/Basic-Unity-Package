@@ -24,6 +24,7 @@ namespace Codesign {
         public virtual IEnumerator Trigger()
         {
             if(IsUnavailable) yield break;
+            
             IsActive = true;
             yield return null;
         }
