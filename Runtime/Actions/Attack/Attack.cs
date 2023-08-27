@@ -101,8 +101,6 @@ namespace Codesign
             OnDamage?.Invoke(damage * distanceRatio);
             OnHit?.Invoke(hit);
 
-            Debug.Log(damage * distanceRatio);
-
             bool kill = false;
             if (damageable.CurrentValue <= 0)
             {

@@ -14,7 +14,6 @@ namespace Codesign
         }
 
         public void GetEnergyFrom(Component component) {
-            print(component);
             if (component.TryGetComponent(out Energy energy)) {
                 AdjustStatus(energy.currentValue * EnergyStealRatio);
             }

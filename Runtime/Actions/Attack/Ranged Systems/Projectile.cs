@@ -53,7 +53,7 @@ namespace Codesign {
 
             Vector3 previousLocation = transform.position;
             detectibleLayers = action.AttackableLayers;
-            while (Vector3.Distance(transform.position, Destination) > projectileSpeed * Time.deltaTime && gameObject.activeInHierarchy)
+            while (Vector3.Distance(transform.position, Destination) > 0.1f && gameObject.activeInHierarchy)
             {
                 transform.position = CalcFlightPath(Destination);
 
@@ -97,7 +97,8 @@ namespace Codesign {
         private Vector3 CalcFlightPath(Vector3 Destination) {
             switch (Path) {
                 case FlightPath.straight:
-                        return Vector3.MoveTowards(transform.position, Destination, projectileSpeed * Time.deltaTime);
+                     return Vector3.MoveTowards(transform.position, Destination, projectileSpeed * Time.deltaTime);
+                    //return Vector3.Lerp(transform.position, Destination, projectileSpeed * Time.deltaTime);
                 case FlightPath.Arc:
                     Vector3 CenterPoint1 = Vector3.Lerp(origin, Destination, 0.33f) + (Vector3.up * arcHeight);
                     Vector3 CenterPoint2 = Vector3.Lerp(origin, Destination, 0.67f) + (Vector3.up * arcHeight);
@@ -106,7 +107,7 @@ namespace Codesign {
                     FlightTime = (Vector3.Distance(origin, CenterPoint1) + Vector3.Distance(CenterPoint1, CenterPoint2) + Vector3.Distance(CenterPoint2, Destination)) / projectileSpeed;
 
                     transform.LookAt(CalculateBezierPoint(((Time.time + (FlightTime/10)) - startTime) / FlightTime, points));
-
+                    
                     return CalculateBezierPoint((Time.time - startTime) / FlightTime, points);
             }
             return Vector3.zero;
