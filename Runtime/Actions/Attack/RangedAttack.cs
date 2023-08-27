@@ -9,6 +9,7 @@ namespace Codesign {
     public class RangedAttack : Attack
     {
         public enum RangedType {Raycast, Projectile}
+        public enum FireType { Single, Burst, Continuous}
 
         [Title("Ranged Settings")]
         public RangedType rangedType;
@@ -20,11 +21,13 @@ namespace Codesign {
         [SerializeField, Tooltip("The Origin of the Ranged Attack")] protected Vector3 firePoint;
         public Vector3 FirePoint { get { return firePoint; } set { firePoint = value; } }
 
+
+        [field: SerializeField, FoldoutGroup("Fire Rate")] public FireType fireType { get; set; } = FireType.Single;
         [SerializeField, FoldoutGroup("Fire Rate")] protected LevelingValue<float> fireRate = 2;
         public float FireRate { get { return fireRate; } set { fireRate = value; } }
+        [field: SerializeField, FoldoutGroup("Fire Rate"), ShowIf("fireType", FireType.Burst)] public float BurstAmount { get; set; } = 3;
+        [field: SerializeField, FoldoutGroup("Fire Rate"), ShowIf("fireType", FireType.Burst)] public float BurstSpacing { get; set; } = 0.1f;
 
-        [SerializeField, FoldoutGroup("Fire Rate")] protected bool continuousFire;
-        public bool ContinuousFire { get { return continuousFire; } set { continuousFire = value; } }
 
 
         [SerializeField] protected SpreadSystem spread = new SpreadSystem();
@@ -83,29 +86,36 @@ namespace Codesign {
 
             if (overheat.Enabled && overheat.heatCooldown != null) StopCoroutine(overheat.heatCooldown);
 
-            ShotCalculation();
-
-            switch (rangedType)
+            int burstCount = 0;
+            do
             {
-                case RangedType.Projectile:
-                    ProjectileShot();
-                    break;
-                case RangedType.Raycast:
-                    LinecastShot();
-                    break;
-            }
+                ShotCalculation();
 
-            
+                switch (rangedType)
+                {
+                    case RangedType.Projectile:
+                        ProjectileShot();
+                        break;
+                    case RangedType.Raycast:
+                        LinecastShot();
+                        break;
+                }
 
-            OnFire?.Invoke();
-            onFirePositions?.Invoke(transform.TransformPoint(firePoint), targetPosition);
+                OnFire?.Invoke();
+                onFirePositions?.Invoke(transform.TransformPoint(firePoint), targetPosition);
 
-            if (Time.time - lastFireTime < spread.SpreadTime) spreadTime = (Time.time - lastFireTime) / spread.SpreadTime;
-            spreadTime += 1/ fireRate;
+                if (Time.time - lastFireTime < spread.SpreadTime) spreadTime = (Time.time - lastFireTime) / spread.SpreadTime;
+                spreadTime += 1 / fireRate;
+
+                if (fireType == FireType.Burst) {
+                    burstCount++;
+                    yield return new WaitForSeconds(BurstSpacing);
+                }
+            } while (fireType == FireType.Burst & burstCount < BurstAmount);
 
             yield return new WaitForSeconds(1 / fireRate);
 
-            if (IsActive && continuousFire ) yield return StartCoroutine(Trigger());
+            if (IsActive && fireType == FireType.Continuous ) yield return StartCoroutine(Trigger());
         }
 
         public override IEnumerator Finish()
@@ -136,8 +146,8 @@ namespace Codesign {
                 case AttackTargetingType.MousePosition:
                     Ray ray = cam.ScreenPointToRay(Input.mousePosition);
                     new Plane(transform.up, origin).Raycast(ray, out float enter);
-                    Vector3 targetVector = (ray.GetPoint(enter) - (transform.position + new Vector3(0,firePoint.y,0))).normalized;
-                    targetPosition = origin + (targetVector * attackRange);
+                    Vector3 targetVector = (ray.GetPoint(enter) - (transform.position + new Vector3(0,firePoint.y,0)));
+                    targetPosition = origin + Vector3.ClampMagnitude(targetVector, attackRange);
                     break;
                 case AttackTargetingType.AutomaticTargeting:
                     if(TargetedObject) targetPosition = TargetedObject.bounds.center;
@@ -147,11 +157,6 @@ namespace Codesign {
                 targetOffset = spread.SpreadCalc(spreadTime);
 
             targetPosition += targetOffset;
-
-            var Vector = (targetPosition - transform.TransformPoint(firePoint)).normalized * attackRange;
-            print(targetPosition);
-            targetPosition = transform.TransformPoint(firePoint) + Vector;
-
         }
 
         public void LinecastShot() {
@@ -167,12 +172,11 @@ namespace Codesign {
 
         public void ProjectileShot()
         {
-            
-
             GameObject bullet = null;
             if (poolProjectile && pooler)
             {
                 bullet = pooler.GetPooledObject(projectile);
+                bullet.transform.parent = null;
                 bullet.transform.position = transform.TransformPoint(firePoint);
                 bullet.transform.LookAt(targetPosition);
             }

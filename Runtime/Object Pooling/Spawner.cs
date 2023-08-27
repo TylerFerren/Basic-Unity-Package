@@ -74,14 +74,12 @@ namespace Codesign
 
         protected void SpawnObject(List<SpawnItem> spawnItems)
         {
-            int objectSeed = Random.Range(0, spawnItems.Count);
-
-            var spawnItem = spawnItems[objectSeed];
+            
+            SpawnItem spawnItem = RandomItemByRate(spawnItems);
 
             Vector3 position = RandomLocation();
             Vector3 size = spawnItem.objectToSpawn.GetComponent<Collider>().bounds.size;
             Quaternion rotation = spawnItem.randomizeRotation ? spawnItem.RandomRotaion() : Quaternion.identity;
-
 
             while (Physics.CheckBox(position, size, spawnItem.objectToSpawn.transform.rotation, Physics.AllLayers, QueryTriggerInteraction.Ignore))
             {
@@ -111,6 +109,30 @@ namespace Codesign
             }
 
             spawnedObjects.Add(spawnedObject);
+        }
+
+        private SpawnItem RandomItemByRate(List<SpawnItem> spawnItems) {
+
+            float totalDropRate = 0;
+            foreach (SpawnItem item in spawnItems)
+            {
+                totalDropRate += item.SpawnRate;
+            }
+
+            float randomValue = Random.Range(0, totalDropRate);
+            float currentRate = 0;
+
+            foreach (SpawnItem item in spawnItems)
+            {
+                currentRate += item.SpawnRate;
+                if (randomValue <= currentRate)
+                {
+                    return item;
+                }
+            }
+
+            int objectSeed = Random.Range(0, spawnItems.Count);
+            return spawnItems[objectSeed];
         }
 
         private Vector3 RandomLocation()
@@ -155,6 +177,7 @@ namespace Codesign
     public class SpawnItem
     {
         public GameObject objectToSpawn;
+        [Range(0,1)]public float SpawnRate = 1;
 
         #region Randomization
         [SerializeField, FoldoutGroup("Randomization")] public bool randomizeRotation;

@@ -38,6 +38,7 @@ namespace Codesign
             var pooledObject = FindPooledObject(prefab);
             if (pooledObject != null)
             {
+
                 if (PrefabUtility.IsPartOfAnyPrefab(pooledObject)) PrefabUtility.RevertPrefabInstance(pooledObject, InteractionMode.UserAction);
                 pooledObject.SetActive(true);
                 return pooledObject;
