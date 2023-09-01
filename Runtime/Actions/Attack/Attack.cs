@@ -25,7 +25,7 @@ namespace Codesign
         public float AttackRange { get { return attackRange; } set { attackRange = value; } }
 
         [field: SerializeField] public AttackTargetingType targetingType { get; set; } = AttackTargetingType.Perspective;
-        [SerializeField, ShowIf("targetingType", AttackTargetingType.AutomaticTargeting)] protected AutomaticTargeting autoTargeting;
+        [field: SerializeField, ShowIf("targetingType", AttackTargetingType.AutomaticTargeting)] public AutomaticTargeting AutoTargeting { get; set; }
 
 
         public Collider TargetedObject { get; set; }
@@ -39,16 +39,16 @@ namespace Codesign
 
         public virtual void Awake()
         {
-            if (targetingType == AttackTargetingType.AutomaticTargeting && autoTargeting == null)
+            if (targetingType == AttackTargetingType.AutomaticTargeting && AutoTargeting == null)
             {
-                autoTargeting = GetComponent<AutomaticTargeting>();
+                AutoTargeting = GetComponent<AutomaticTargeting>();
             }
         }
 
         public override IEnumerator Trigger()
         {
             yield return StartCoroutine(base.Trigger());
-            if (autoTargeting) TargetedObject = autoTargeting.TargetedObject;
+            if (AutoTargeting) TargetedObject = AutoTargeting.TargetedObject;
         }
 
         public override IEnumerator Release()
